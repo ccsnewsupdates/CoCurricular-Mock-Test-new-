@@ -1,1 +1,130 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>University Gyaan - First Aid Mock Test</title>
+    <style>
+        :root { --p: #003366; --s: #0056b3; --acc: #ffd700; --white: #ffffff; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; margin: 0; padding: 0; }
+        header { background: var(--p); color: white; text-align: center; padding: 20px; border-bottom: 4px solid var(--acc); }
+        .container { max-width: 900px; margin: 20px auto; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .screen { display: none; }
+        .active { display: block; }
+        .input-group { margin-bottom: 15px; }
+        label { display: block; font-weight: bold; margin-bottom: 5px; }
+        input { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; }
+        .btn { width: 100%; padding: 15px; border: none; border-radius: 8px; font-size: 1.1rem; font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 10px; }
+        .btn-start { background: var(--s); color: white; }
+        .btn-start:hover { background: var(--p); }
+        .q-box { font-size: 1.3rem; font-weight: bold; margin-bottom: 20px; padding: 15px; border-left: 5px solid var(--s); background: #f9f9f9; }
+        .opt { display: block; width: 100%; padding: 15px; margin: 10px 0; border: 2px solid #eee; border-radius: 8px; text-align: left; cursor: pointer; font-size: 1rem; transition: 0.2s; }
+        .opt:hover { border-color: var(--s); background: #f0f7ff; }
+        .selected { border-color: var(--s); background: #e7f1ff; }
+        .review-item { padding: 15px; border-bottom: 1px solid #ddd; margin-bottom: 10px; }
+        .correct { color: #28a745; font-weight: bold; }
+        .wrong { color: #dc3545; font-weight: bold; }
+        .summary-card { background: var(--p); color: white; padding: 20px; border-radius: 10px; text-align: center; margin-bottom: 30px; }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>UNIVERSITY GYAAN</h1>
+    <p>First Aid & Health (प्राथमिक उपचार एवं स्वास्थ्य) Mock Test</p>
+</header>
+
+<div class="container">
+    <div id="setup" class="screen active">
+        <h2 style="text-align: center;">Candidate Details</h2>
+        <div class="input-group"><label>Name (नाम):</label><input type="text" id="name" placeholder="अपना नाम लिखें"></div>
+        <div class="input-group"><label>Roll Number (रोल नंबर):</label><input type="text" id="roll" placeholder="रोल नंबर लिखें"></div>
+        <div class="input-group"><label>Class (कक्षा):</label><input type="text" id="class" placeholder="कक्षा लिखें"></div>
+        <button class="btn btn-start" onclick="startTest(1)">Start Mock Test - 1 (1-100)</button>
+        <button class="btn btn-start" onclick="startTest(2)">Start Mock Test - 2 (101-187)</button>
+    </div>
+
+    <div id="quiz" class="screen">
+        <div id="qInfo" style="font-weight: bold; color: var(--s); margin-bottom: 10px;"></div>
+        <div id="qText" class="q-box"></div>
+        <div id="opts"></div>
+        <button class="btn btn-start" id="nextBtn" onclick="next()" style="display: none;">Next Question</button>
+    </div>
+
+    <div id="result" class="screen">
+        <div class="summary-card">
+            <h2>Result Summary</h2>
+            <div id="userD"></div>
+            <h1 id="score"></h1>
+        </div>
+        <h3>Review All Questions (समीक्षा)</h3>
+        <div id="review"></div>
+        <button class="btn btn-start" onclick="location.reload()">Back to Home</button>
+    </div>
+</div>
+
+<script src="questions.js"></script>
+
+<script>
+let testSet = [], curIdx = 0, score = 0, userAnswers = [];
+
+function startTest(set) {
+    if(!document.getElementById('name').value) return alert("कृपया नाम भरें");
+    // 'allQ' variable questions.js फाइल से आएगा
+    testSet = set === 1 ? allQ.slice(0, 100) : allQ.slice(100, 187);
+    document.getElementById('setup').classList.remove('active');
+    document.getElementById('quiz').classList.add('active');
+    showQ();
+}
+
+function showQ() {
+    const q = testSet[curIdx];
+    document.getElementById('qInfo').innerText = `Question ${curIdx + 1} of ${testSet.length}`;
+    document.getElementById('qText').innerText = q.q;
+    const optBox = document.getElementById('opts');
+    optBox.innerHTML = '';
+    q.a.forEach((o, i) => {
+        const b = document.createElement('button');
+        b.className = 'opt';
+        b.innerText = o;
+        b.onclick = () => {
+            userAnswers[curIdx] = i;
+            document.querySelectorAll('.opt').forEach(el => el.classList.remove('selected'));
+            b.classList.add('selected');
+            document.getElementById('nextBtn').style.display = 'block';
+        };
+        optBox.appendChild(b);
+    });
+    document.getElementById('nextBtn').style.display = 'none';
+}
+
+function next() {
+    if(userAnswers[curIdx] === testSet[curIdx].c) score++;
+    curIdx++;
+    if(curIdx < testSet.length) showQ(); else showResult();
+}
+
+function showResult() {
+    document.getElementById('quiz').classList.remove('active');
+    document.getElementById('result').classList.add('active');
+    document.getElementById('userD').innerHTML = `Name: ${document.getElementById('name').value} | Roll: ${document.getElementById('roll').value} | Class: ${document.getElementById('class').value}`;
+    document.getElementById('score').innerText = `Final Score: ${score} / ${testSet.length}`;
+    
+    const rBox = document.getElementById('review');
+    rBox.innerHTML = '';
+    testSet.forEach((q, i) => {
+        const div = document.createElement('div');
+        div.className = 'review-item';
+        const isC = userAnswers[i] === q.c;
+        div.innerHTML = `
+            <div><b>Q${i+1}:</b> ${q.q}</div>
+            <div class="${isC ? 'correct' : 'wrong'}">Your Answer: ${q.a[userAnswers[i]] || 'Not Attempted'}</div>
+            ${!isC ? `<div class="correct">Correct Answer: ${q.a[q.c]}</div>` : ''}
+        `;
+        rBox.appendChild(div);
+    });
+}
+</script>
+</body>
+</html>
 
