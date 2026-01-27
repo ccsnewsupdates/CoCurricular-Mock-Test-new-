@@ -17,8 +17,8 @@
         .btn { width: 100%; padding: 15px; border: none; border-radius: 8px; font-size: 1.1rem; font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 10px; }
         .btn-start { background: var(--s); color: white; }
         .btn-start:hover { background: var(--p); }
-        .q-box { font-size: 1.3rem; font-weight: bold; margin-bottom: 20px; padding: 15px; border-left: 5px solid var(--s); background: #f9f9f9; }
-        .opt { display: block; width: 100%; padding: 15px; margin: 10px 0; border: 2px solid #eee; border-radius: 8px; text-align: left; cursor: pointer; font-size: 1rem; transition: 0.2s; }
+        .q-box { font-size: 1.2rem; font-weight: bold; margin-bottom: 20px; padding: 15px; border-left: 5px solid var(--s); background: #f9f9f9; line-height: 1.5; }
+        .opt { display: block; width: 100%; padding: 12px; margin: 8px 0; border: 2px solid #eee; border-radius: 8px; text-align: left; cursor: pointer; font-size: 1rem; transition: 0.2s; }
         .opt:hover { border-color: var(--s); background: #f0f7ff; }
         .selected { border-color: var(--s); background: #e7f1ff; }
         .review-item { padding: 15px; border-bottom: 1px solid #ddd; margin-bottom: 10px; }
@@ -37,9 +37,9 @@
 <div class="container">
     <div id="setup" class="screen active">
         <h2 style="text-align: center;">Candidate Details</h2>
-        <div class="input-group"><label>Name (नाम):</label><input type="text" id="name" placeholder="अपना नाम लिखें"></div>
-        <div class="input-group"><label>Roll Number (रोल नंबर):</label><input type="text" id="roll" placeholder="रोल नंबर लिखें"></div>
-        <div class="input-group"><label>Class (कक्षा):</label><input type="text" id="class" placeholder="कक्षा लिखें"></div>
+        <div class="input-group"><label>Name:</label><input type="text" id="name" placeholder="अपना नाम लिखें"></div>
+        <div class="input-group"><label>Roll Number:</label><input type="text" id="roll" placeholder="रोल नंबर लिखें"></div>
+        <div class="input-group"><label>Class:</label><input type="text" id="class" placeholder="कक्षा लिखें"></div>
         <button class="btn btn-start" onclick="startTest(1)">Start Mock Test - 1 (1-100)</button>
         <button class="btn btn-start" onclick="startTest(2)">Start Mock Test - 2 (101-187)</button>
     </div>
@@ -48,7 +48,7 @@
         <div id="qInfo" style="font-weight: bold; color: var(--s); margin-bottom: 10px;"></div>
         <div id="qText" class="q-box"></div>
         <div id="opts"></div>
-        <button class="btn btn-start" id="nextBtn" onclick="next()" style="display: none;">Next Question</button>
+        <button class="btn btn-start" id="nextBtn" onclick="next()" style="display: none;">Next Question ➔</button>
     </div>
 
     <div id="result" class="screen">
@@ -57,74 +57,97 @@
             <div id="userD"></div>
             <h1 id="score"></h1>
         </div>
-        <h3>Review All Questions (समीक्षा)</h3>
+        <h3>Review Questions (समीक्षा)</h3>
         <div id="review"></div>
         <button class="btn btn-start" onclick="location.reload()">Back to Home</button>
     </div>
 </div>
 
-<script src="questions.js"></script>
-
 <script>
-let testSet = [], curIdx = 0, score = 0, userAnswers = [];
-
-function startTest(set) {
-    if(!document.getElementById('name').value) return alert("कृपया नाम भरें");
-    // 'allQ' variable questions.js फाइल से आएगा
-    testSet = set === 1 ? allQ.slice(0, 100) : allQ.slice(100, 187);
-    document.getElementById('setup').classList.remove('active');
-    document.getElementById('quiz').classList.add('active');
-    showQ();
-}
-
-function showQ() {
-    const q = testSet[curIdx];
-    document.getElementById('qInfo').innerText = `Question ${curIdx + 1} of ${testSet.length}`;
-    document.getElementById('qText').innerText = q.q;
-    const optBox = document.getElementById('opts');
-    optBox.innerHTML = '';
-    q.a.forEach((o, i) => {
-        const b = document.createElement('button');
-        b.className = 'opt';
-        b.innerText = o;
-        b.onclick = () => {
-            userAnswers[curIdx] = i;
-            document.querySelectorAll('.opt').forEach(el => el.classList.remove('selected'));
-            b.classList.add('selected');
-            document.getElementById('nextBtn').style.display = 'block';
-        };
-        optBox.appendChild(b);
-    });
-    document.getElementById('nextBtn').style.display = 'none';
-}
-
-function next() {
-    if(userAnswers[curIdx] === testSet[curIdx].c) score++;
-    curIdx++;
-    if(curIdx < testSet.length) showQ(); else showResult();
-}
-
-function showResult() {
-    document.getElementById('quiz').classList.remove('active');
-    document.getElementById('result').classList.add('active');
-    document.getElementById('userD').innerHTML = `Name: ${document.getElementById('name').value} | Roll: ${document.getElementById('roll').value} | Class: ${document.getElementById('class').value}`;
-    document.getElementById('score').innerText = `Final Score: ${score} / ${testSet.length}`;
-    
-    const rBox = document.getElementById('review');
-    rBox.innerHTML = '';
-    testSet.forEach((q, i) => {
-        const div = document.createElement('div');
-        div.className = 'review-item';
-        const isC = userAnswers[i] === q.c;
-        div.innerHTML = `
-            <div><b>Q${i+1}:</b> ${q.q}</div>
-            <div class="${isC ? 'correct' : 'wrong'}">Your Answer: ${q.a[userAnswers[i]] || 'Not Attempted'}</div>
-            ${!isC ? `<div class="correct">Correct Answer: ${q.a[q.c]}</div>` : ''}
-        `;
-        rBox.appendChild(div);
-    });
-}
-</script>
-</body>
-</html>
-
+const allQ = [
+    { q: "1. [cite_start]पीड़ित व्यक्ति के जले हुए भाग को साफ या रोगाणुहीन ड्रेसिंग से क्यों ढका जाना चाहिए?[span_0](end_span)", a: ["जले हुए भाग को गर्म रखने के लिए", "जले हुए भाग को ठंडा करने के लिए", "संक्रमण को रोकने के लिए", "(a) और (b) दोनों"], c: 2 },
+    { q: "2. [span_1](start_span)किस जले हुए पीड़ित के लिए तुरंत अपने स्थानीय आपातकालीन फोन नंबर पर कॉल करना चाहिए?[span_1](end_span)", a: ["गर्म कॉफी से जला हाथ", "सनबर्न", "हाथ और बांह पर छाले", "उपरोक्त सभी"], c: 2 },
+    { q: "3. [span_2](start_span)मानव शरीर में कितने अंगुल्यस्थियाँ (Phalanges) होते हैं?[span_2](end_span)", a: ["12", "15", "14", "10"], c: 2 },
+    { q: "4. [span_3](start_span)दर्द कम करना ........ का पहला उद्देश्य है।[span_3](end_span)", a: ["प्राथमिक उपचार", "दवा", "ICU उपचार", "सर्जरी"], c: 0 },
+    { q: "5. [span_4](start_span)चेहरे पर केमिकल छिड़कने पर एम्बुलेंस आने तक आप क्या करेंगे?[span_4](end_span)", a: ["जले हुए भाग को कवर करेंगे", "पीड़ित को शांत रखेंगे", "पीड़ित को तुरंत अस्पताल ले जाएँगे", "बड़ी मात्रा में पानी से धोएँगे"], c: 3 },
+    { q: "6. [span_5](start_span)स्प्लिंट का उपयोग तभी करना चाहिए जब-[span_5](end_span)", a: ["पीड़ित को स्थानांतरित करना हो", "पीड़ित को चोट पहुँचाए बिना कर सकते हैं", "(a) और (b) दोनों", "सामग्री उपलब्ध हो"], c: 2 },
+    { q: "7. [span_6](start_span)किसी मरीज की स्थिति की जांच करते समय सबसे पहले क्या कार्रवाई की जाती है?[span_6](end_span)", a: ["सांस लेने की जाँच करें", "बीमा के लिए जाँच करें", "बाहरी चोटों की जाँच करें", "पीड़ित से बात करें और उसके कंधे हिलाएं"], c: 3 },
+    { q: "8. [span_7](start_span)एक दौरा पीड़ित की देखभाल करते समय किस बात का ध्यान रखना चाहिए?[span_7](end_span)", a: ["पीड़ित को सीधा पकड़ना", "दांतों के बीच कपड़ा रखना", "आस-पास की वस्तुओं को हटाना", "उपरोक्त सभी"], c: 2 },
+    { q: "9. [span_8](start_span)नुकीले हथियार से होने वाला घाव कौन-सा है?[span_8](end_span)", a: ["कटे हुए घाव", "पंचर घाव", "बंद घाव", "विदीर्ण घाव"], c: 1 },
+    { q: "10. [span_9](start_span)फर्स्ट डिग्री बर्न है-[span_9](end_span)", a: ["त्वचा की सभी परतों को नष्ट कर देना", "लाल और छाला होना", "केवल त्वचा की ऊपरी परत का शामिल होना", "जलने में सबसे गंभीर है"], c: 2 },
+    { q: "11. [span_10](start_span)निम्नलिखित में से कौन-से लक्षण आंतरिक रक्तस्राव का संकेत देते हैं?[span_10](end_span)", a: ["तेजी से कमजोर नाड़ी, अत्यधिक प्यास", "ठंडी या नीली त्वचा", "कोमल अंग सूजे हुए", "उपरोक्त सभी"], c: 3 },
+    { q: "12. [span_11](start_span)हाथ पर कोई वस्तु लगने से घाव होने पर क्या करना चाहिए?[span_11](end_span)", a: ["वस्तु को हटाएँ", "वस्तु को तोड़ दें", "चारों ओर ड्रेसिंग करके वस्तु को स्थिर करें", "कोई नहीं"], c: 2 },
+    { q: "13. [span_12](start_span)निम्नलिखित में से सदमे का लक्षण नहीं है-[span_12](end_span)", a: ["तेज प्यास, मतली", "तेजी से श्वास", "बेचैनी", "छाती या पेट में दर्द"], c: 3 },
+    { q: "14. [span_13](start_span)छात्र का मुँह में चोट लगने से दांत टूट गया है, क्या करेंगे?[span_13](end_span)", a: ["रक्तस्त्राव नियंत्रित करें", "दूध या पानी में दाँत बचाएँ", "(a) और (b) दोनों", "दाँत को सूखे ऊतक में लपेटें"], c: 2 },
+    { q: "15. [span_14](start_span)जिन घावों में टांके लगाने पड़ते हैं, वे-[span_14](end_span)", a: ["एक इंच से अधिक लंबे हों", "अनियंत्रित रक्तस्त्राव", "मानव या पशु काटने पर", "उपरोक्त सभी"], c: 3 },
+    { q: "16. [span_15](start_span)खूनी नाक (Nosebleed) वाले पीड़ित की देखभाल कैसे करेंगे?[span_15](end_span)", a: ["नथुनों को पिंच करते हुए सिर को थोड़ा पीछे झुकाकर बैठाएँ", "होंठ पर दबाव", "आइस पैक", "नथुनों को पिंच करते हुए सिर को थोड़ा आगे झुकाकर बैठाएँ"], c: 0 },
+    { q: "17. [span_16](start_span)मनुष्य के शरीर के दायें फेफड़े का वजन कितने ग्राम का होता है?[span_16](end_span)", a: ["620", "570", "470", "680"], c: 0 },
+    { q: "18. [span_17](start_span)श्वसन क्रिया है-[span_17](end_span)", a: ["अनावश्यक क्रिया", "अनैच्छिक क्रिया", "ऐच्छिक क्रिया", "इनमें से कोई नहीं"], c: 1 },
+    { q: "19. [span_18](start_span)मनुष्य सामान्यतया कितनी वायु ग्रहण करता है?[span_18](end_span)", a: ["1640 मिली", "500 मिली", "3500 मिली", "1200 मिली"], c: 1 },
+    { q: "20. [span_19](start_span)जल रक्त को बनाये रखता है-[span_19](end_span)", a: ["ठण्डा", "तरल", "गाढ़ा", "गर्म"], c: 1 },
+    { q: "21. [span_20](start_span)एक स्वस्थ व्यक्ति एक मिनट में कितनी बार श्वास लेता है?[span_20](end_span)", a: ["15-20 बार", "10-20 बार", "20-25 बार", "12-14 बार"], c: 0 },
+    { q: "22. [span_21](start_span)मनुष्य के शरीर में फुफ्फुसों की संख्या कितनी होती है?[span_21](end_span)", a: ["चार", "तीन", "दो", "पाँच"], c: 2 },
+    { q: "23. [span_22](start_span)फेफड़ों से ऑक्सीजन को रक्त का कौन-सा भाग ग्रहण करता है?[span_22](end_span)", a: ["प्लाज्मा", "हीमोग्लोबिन", "श्वेत रक्त कणिकायें", "रक्त कणिकायें"], c: 1 },
+    { q: "24. [span_23](start_span)प्रश्वसन में सहायक होती है-[span_23](end_span)", a: ["ऐच्छिक पेशियाँ", "अन्तः अन्तरापर्शक पेशियाँ", "बाह्य अन्तरापर्शक पेशियाँ", "हृदय पेशियाँ"], c: 2 },
+    { q: "25. [span_24](start_span)मनुष्य के शरीर में फेफड़ों की संख्या कितनी होती है?[span_24](end_span)", a: ["2", "4", "1", "अनेक"], c: 0 },
+    { q: "26. [span_25](start_span)व्यक्ति के डूबने पर निम्न सहायता दी जाती है-[span_25](end_span)", a: ["स्नान कराया जाता है", "घाव की पट्टी", "गर्म पेय", "कृत्रिम श्वास"], c: 3 },
+    { q: "27. [span_26](start_span)वायु को श्वास द्वारा फेफड़ों में ग्रहण करना क्या कहलाता है?[span_26](end_span)", a: ["श्वसन", "साँस लेना", "निःश्वसन", "प्रश्वसन"], c: 3 },
+    { q: "28. [span_27](start_span)श्वसन का प्रमुख अंग कौन-सा है?[span_27](end_span)", a: ["त्वचा", "आमाशय", "फेफड़े", "मुखगुहा"], c: 2 },
+    { q: "29. [span_28](start_span)ऑक्सीजन द्वारा रक्त का शुद्धीकरण कहाँ होता है?[span_28](end_span)", a: ["पाचन अंग", "त्वचा", "हृदय", "फुफ्फुस (फेफड़े)"], c: 3 },
+    { q: "30. [span_29](start_span)अशुद्ध रक्त किस गैस को ग्रहण करके शुद्ध हो जाता है?[span_29](end_span)", a: ["O2", "CO2", "H2O", "कोई नहीं"], c: 0 },
+    { q: "31. [span_30](start_span)सिल्वेस्टर विधि में कृत्रिम श्वास देने के लिए कितने व्यक्तियों की आवश्यकता होती है?[span_30](end_span)", a: ["एक", "चार", "तीन", "दो"], c: 3 },
+    { q: "32. [span_31](start_span)रक्त में ऑक्सीजन की मात्रा कम होने पर वह-[span_31](end_span)", a: ["बैंगनी रंग में परिवर्तित", "नीले रंग का", "चमकीले लाल", "उपर्युक्त सभी"], c: 0 },
+    { q: "33. [span_32](start_span)मुँह से खून निकलना, पेट में संकुचन और कमजोर नाड़ी किसके लक्षण हैं?[span_32](end_span)", a: ["सिर की चोट", "जहर", "ड्रग ओवरडोज", "आंतरिक रक्तस्त्राव"], c: 3 },
+    { q: "34. [span_33](start_span)आपात स्थिति में आप कौन-से तीन बुनियादी कदम उठा सकते हैं?[span_33](end_span)", a: ["चेक, कॉल, केयर", "कॉल, चेक, केयर", "पहचानें, निर्णय लें", "निर्णय लें, निष्पादित करें"], c: 0 },
+    { q: "35. [span_34](start_span)आँख में काँटा लगने पर क्या करेंगे?[span_34](end_span)", a: ["काँटा अंदर छोड़ दो, मदद बुलाओ", "पानी से धो लें", "चिमटी से निकालें", "दोनों आँखें ढकें"], c: 0 },
+    { q: "36. [span_35](start_span)शुद्ध रक्त बहता है-[span_35](end_span)", a: ["पश्च महाशिरा में", "अग्र महाशिरा में", "फुफ्फुस शिरा में", "उपर्युक्त सभी"], c: 2 },
+    { q: "37. आठ साल का बच्चा बेहोश है और वायुमार्ग अवरुद्ध है। [span_36](start_span)क्या करेंगे?[span_36](end_span)", a: ["बचाव श्वास", "सीपीआर शुरु करें", "पेट पर जोर दें", "उपरोक्त सभी"], c: 2 },
+    { q: "38. [span_37](start_span)वयस्क पर सीपीआर करते समय छाती का संकुचन कितना गहरा होना चाहिए?[span_37](end_span)", a: ["1.5 इंच", "2.5 इंच", "2 इंच", "3 इंच"], c: 2 },
+    { q: "39. [span_38](start_span)हृदय द्वारा महत्त्वपूर्ण कार्य किया जाता है-[span_38](end_span)", a: ["धड़कना", "पोषक तत्त्व संचित करना", "श्वसन में सहायता", "शुद्ध रक्त शरीर में पहुँचाना व अशुद्ध फेफड़ों में"], c: 3 },
+    { q: "40. [span_39](start_span)मधुमेह (Diabetes) टैग पहने बेहोश पीड़ित के लिए क्या करेंगे?[span_39](end_span)", a: ["सांस और नाड़ी की जाँच", "सीपीआर शुरु करें", "इंसुलिन दें", "बचाव श्वास"], c: 0 },
+    { q: "41. [span_40](start_span)एक बच्चे पर सीपीआर करते समय छाती का संकुचन कितना गहरा होना चाहिए?[span_40](end_span)", a: ["3 इंच", "2 इंच", "2.5 इंच", "1.5 इंच"], c: 3 },
+    { q: "42. [span_41](start_span)अशुद्ध रक्त बहता है-[span_41](end_span)", a: ["पृष्ठ महाधमनी में", "प्लीहा-जठर धमनी में", "यकृत धमनी में", "फुफ्फुसीय धमनी में"], c: 3 },
+    { q: "43. [span_42](start_span)परिसंचरण तन्त्र का मुख्यतम अंग है-[span_42](end_span)", a: ["फेफड़े", "शिराएँ", "धमनियाँ", "हृदय"], c: 3 },
+    { q: "44. [span_43](start_span)स्वस्थ मनुष्य का सामान्य रुधिर दाब पारे के कितने मिमी के बराबर होता है?[span_43](end_span)", a: ["25-55", "105-130", "80-55", "120/80 (As per key d: 55-80)"], c: 3 },
+    { q: "45. [span_44](start_span)प्रोथ्रोम्बिन निर्माण के लिए किस विटामिन की आवश्यकता होती है?[span_44](end_span)", a: ["D", "B", "A", "K"], c: 3 },
+    { q: "46. [span_45](start_span)लाल रक्त कणिकाओं का लाल रंग किससे प्राप्त होता है?[span_45](end_span)", a: ["हीमोग्लोबिन", "जीवद्रव्य", "प्लाज्मा", "कोई नहीं"], c: 0 },
+    { q: "47. [span_46](start_span)लाल रक्त कोशिकाओं में पाया जाने वाला पदार्थ है-[span_46](end_span)", a: ["हीमोग्लोबिन", "प्लाज्मा", "प्रोटीन", "कोई नहीं"], c: 0 },
+    { q: "48. [span_47](start_span)श्वेत रुधिर कणिकाओं का कार्य है-[span_47](end_span)", a: ["रोगाणुओं को नष्ट करना", "प्रतिविष तैयार करना", "रक्षा करना", "उपर्युक्त सभी"], c: 3 },
+    { q: "49. [span_48](start_span)एंटीजन A तथा B के आधार पर रक्त समूह कितने भागों में बाँटे गए हैं?[span_48](end_span)", a: ["दो", "पाँच", "चार", "छ:"], c: 2 },
+    { q: "50. [span_49](start_span)शरीर-रक्षक कणिकाएँ हैं-[span_49](end_span)", a: ["प्लेटलेट्स", "लाल रक्त कणिकाएँ", "श्वेत रक्त कणिकाएँ", "फाईब्रिनोजन"], c: 2 },
+    { q: "51. [span_50](start_span)पोषक तत्वों तथा ऑक्सीजन को शरीर के अंगों में पहुँचाने वाला तन्त्र-[span_50](end_span)", a: ["पाचन तन्त्र", "श्वसन तन्त्र", "परिसंचरण तन्त्र", "विसर्जन तन्त्र"], c: 2 },
+    { q: "52. [span_51](start_span)रक्त परिसंचरण संस्थान के कितने अंग हैं?[span_51](end_span)", a: ["चार", "तीन", "दो", "पाँच"], c: 0 },
+    { q: "53. [span_52](start_span)उम्र विशेष की स्थिति से अधिक रक्त दाब क्या कहलाता है?[span_52](end_span)", a: ["उच्च रक्त दाब", "अल्प रक्त दाब", "निम्न रक्त दाब", "कोई नहीं"], c: 0 },
+    { q: "54. [span_53](start_span)रक्त परिभ्रमण का केन्द्र स्थल क्या है?[span_53](end_span)", a: ["वृक्क", "फेफड़े", "हृदय", "कोशिका"], c: 2 },
+    { q: "55. [span_54](start_span)बिजली का झटका (Electric Shock) लगने पर सबसे पहले क्या करें?[span_54](end_span)", a: ["जले भाग को कवर करें", "सुनिश्चित करें कि बिजली बंद है", "सिर नीचे रखें", "मरीज को स्थानांतरित करें"], c: 1 },
+    { q: "56. [span_55](start_span)प्राथमिक उपचार के सही क्रम को व्यवस्थित करें-[span_55](end_span)", a: ["2,4,3,1", "4,3,2,1", "1,2,3,4", "4,2,1,3"], c: 2 },
+    { q: "57. [span_56](start_span)जीवन सहायता में ABC का अर्थ है-[span_56](end_span)", a: ["कोई नहीं", "एयरवे, ब्रिज, कैनाल", "एयरवे, ब्रीथिंग, सर्कुलेशन", "एक्शन, सर्कुलेशन, ब्रीथिंग"], c: 2 },
+    { q: "58. [span_57](start_span)निम्नलिखित में से कौन-सा प्राथमिक चिकित्सा का उद्देश्य है?[span_57](end_span)", a: ["जीवन की रक्षा", "चोटों को सीमित करना", "स्वास्थ्य लाभ", "उपरोक्त सभी"], c: 3 },
+    { q: "59. [span_58](start_span)चिकित्सा प्राथमिक उपचार में DRAB का पूर्णरूप क्या है?[span_58](end_span)", a: ["ड्रैग, रेस्पोंस...", "डेंजर, रिएक्ट...", "डेंजर, रेस्पोंस, एयरवे, ब्रीथिंग", "ड्रैग, रिएक्ट..."], c: 2 },
+    { q: "60. [span_59](start_span)प्राथमिक चिकित्सा में कौन-सी तकनीक का उपयोग किया जाता है?[span_59](end_span)", a: ["पट्टी", "परिवहन तकनीक", "बैंडेज", "उपरोक्त सभी"], c: 3 },
+    { q: "61. [span_60](start_span)एक अच्छी पट्टी ........ होनी चाहिए।[span_60](end_span)", a: ["कीटाणुओं वाली", "गीली", "तैलीय", "रोगाणु मुक्त"], c: 3 },
+    { q: "62. [span_61](start_span)दम घुटने वाले शिशु के लिए क्या करेंगे?[span_61](end_span)", a: ["पीठ पर वार और छाती पर दबाव", "सी०पी०आर०", "हेमलिक प्रक्रिया", "शिशु को उल्टा पकड़ें"], c: 0 },
+    { q: "63. [span_62](start_span)बांह के अग्र भाग पर रक्तस्त्राव रोकने हेतु दबाव कहाँ लागू करेंगे?[span_62](end_span)", a: ["कंधे और कोहनी के बीच हाथ के अंदर", "कोहनी के अंदर", "हाथ के बाहर", "कोई नहीं"], c: 0 },
+    { q: "64. [span_63](start_span)कौन-सा व्यवहार चोट के जोखिम को कम करता है?[span_63](end_span)", a: ["सुरक्षा बेल्ट पहनना", "शराब सीमित करना", "(a) और (b) दोनों", "कोलेस्ट्रॉल सीमित करना"], c: 2 },
+    { q: "65. [span_64](start_span)अधिकांश चोटें उन स्थितियों के कारण होती हैं-[span_64](end_span)", a: ["नियंत्रण नहीं था", "पानी के खेल", "5+ लोग", "जिन पर नियंत्रण था"], c: 3 },
+    { q: "66. [span_65](start_span)खुले घावों की देखभाल में संक्रमण का जोखिम कैसे कम करें?[span_65](end_span)", a: ["हाथ धो लें", "सीधे संपर्क से बचें", "दस्ताने प्रयोग करें", "उपरोक्त सभी"], c: 3 },
+    { q: "67. [span_66](start_span)पीड़ित व्यक्ति के लिए ड्रेसिंग और पट्टियों का उपयोग कब किया जाता है?[span_66](end_span)", a: ["रक्तस्त्राव नियंत्रित व संक्रमण रोकने हेतु", "आंतरिक रक्तस्त्राव हेतु", "दर्द कम करने हेतु", "अस्पताल ले जाने हेतु"], c: 0 },
+    { q: "68. [span_67](start_span)खून बहने वाले घावों की देखभाल में पहला कदम क्या है?[span_67](end_span)", a: ["ऊपर उठाना", "दबाव बिन्दु", "भारी ड्रेसिंग", "विसंक्रमित ड्रेसिंग के साथ सीधा दबाव"], c: 3 },
+    { q: "69. [span_68](start_span)आंतरिक रक्तस्राव के कारण हो सकते हैं-[span_68](end_span)", a: ["दवा", "बीमारी", "चोट", "उपरोक्त सभी"], c: 2 },
+    { q: "70. [span_69](start_span)पीड़ित व्यक्ति को बचाव श्वास (Rescue Breathing) कब देनी चाहिए?[span_69](end_span)", a: ["सचेत घुटन", "बेहोश, सांस नहीं ले रहा पर नाड़ी है", "बेहोश, नाड़ी नहीं", "बेहोश घुटन"], c: 1 },
+    { q: "71. [span_70](start_span)शीतदंश (Frostbite) पीड़ित की देखभाल में क्या 'नहीं' करना चाहिए?[span_70](end_span)", a: ["गर्म पानी में भिगोना", "फफोले फोड़ना", "धीरे से संभालना", "जोर से रगड़ना"], c: 3 },
+    { q: "72. [span_71](start_span)आंतरिक रक्तस्त्राव वाले पीड़ित के लिए क्या करेंगे?[span_71](end_span)", a: ["चुप कराकर लिटा दें", "घुटनों को मोड़कर आराम", "(a) और (b) दोनों", "कोई नहीं"], c: 2 },
+    { q: "73. [span_72](start_span)EMS प्रणाली में आपकी भूमिका के चार चरण हैं-[span_72](end_span)", a: ["पहचानें, निर्णय लें, कॉल करें, प्रदान करें", "चेक, कॉल, बचाव", "ऊँचा करना...", "कोई नहीं"], c: 0 },
+    { q: "74. [span_73](start_span)लू लगना (Heat Stroke) क्या है?[span_73](end_span)", a: ["तापमान में अत्यधिक वृद्धि", "लाल या शुष्क त्वचा", "कमजोर नाड़ी, उथली श्वास", "उपरोक्त सभी"], c: 3 },
+    { q: "75. [span_74](start_span)शरीर का अंग कटा या फटा होने पर क्या करेंगे?[span_74](end_span)", a: ["ड्रेसिंग में लपेटें", "प्लास्टिक बैग में रखें", "बैग बर्फ पर रखें + अस्पताल", "उपरोक्त सभी"], c: 3 },
+    { q: "76. [span_75](start_span)शिशु सी०पी०आर० में हवा पेट में जाने से कैसे बचें?[span_75](end_span)", a: ["धीरे-धीरे", "सही और तेज", "कठिन और तेज", "लंबी और कठिन"], c: 0 },
+    { q: "77. [span_76](start_span)लड़की का दाँत टूटकर गिर जाने पर क्या क्रिया सर्वोत्तम है?[span_76](end_span)", a: ["ठंडे दूध या पानी में रखें", "ड्रेसिंग में रखें", "बलग के नीचे", "जीभ के नीचे"], c: 0 },
+    { q: "78. [span_77](start_span)सांप के काटने (Snake Bite) पर क्या करेंगे?[span_77](end_span)", a: ["बर्फ लगाएँ", "ऊपर उठाएँ", "क्रॉस काटें", "घाव धोएँ, हृदय से नीचे रखें + चिकित्सा"], c: 3 },
+    { q: "79. [span_78](start_span)दिल का दौरा (Heart Attack) पीड़ित के पास दवा है तो क्या करें?[span_78](end_span)", a: ["जीभ के नीचे दवा", "लिटा दें", "सीपीआर शुरू", "सहायता करें, 112 कॉल, आश्वस्त करें"], c: 3 },
+    { q: "80. [span_79](start_span)पीड़ित मदद से इंकार करता है फिर बेहोश हो जाता है, क्या करेंगे?[span_79](end_span)", a: ["अनुमति 'निहित' है", "112 कॉल + देखभाल", "(a) और (b) दोनों", "प्रतीक्षा"], c: 2 },
+    { q: "81. [span_80](start_span)पैरों में शीतदंश (Frostbite) होने पर क्या करना चाहिए?[span_80](end_span)", a: ["जोर से रगड़ें", "गर्म नम तौलिये", "90C पानी", "105C से कम गर्म पानी में भिगोएँ"], c: 3 },
+    { q: "82. [span_81](start_span)छात्र के कमर में गंभीर कट होने पर क्या करेंगे?[span_81](end_span)", a: ["अस्पताल ले जाएँ", "पैर ऊपर उठाएँ", "सीधे दबाव वाली ड्रेसिंग", "ड्रेसिंग + ऊरु धमनी पर दबाव"], c: 2 },
+    { q: "83. [span_82](start_span)प्लाज्मा में किस प्रकार का प्रोटीन पाया जाता है?[span_82](end_span)", a: ["एल्ब्यूमिन", "ग्लोल्यूलिन", "फाइब्रिनोजन", "उपर्युक्त सभी"], c: 3 },
+    { q: "84. [span_83](start_span)कोशिकाओं में शुद्ध रक्त की क्रिया से ऊर्जा के साथ क्या बनता है?[span_83](end_span)", a: ["कार्बन डाइ-ऑक्साइड", "माइटोकॉण्ड्रिया", "एल्युमीनियम", "लाइसोसोम"], c: 0 },
+    { q: "85. [span_84](start_span)न्यूट्रोफिल्स (Neutrophils) की संख्या WBC में कितनी होती है?[span_84](end_span)", a: ["प्रकार", "70%", "बहुरूपी", "उपर्युक्त सभी"], c: 1 },
+    { q: "86. [span_85](start_span)कणिकामय श्वेत रक्त कणिकाएँ (Granular WBC) हैं-[span_85](end_span)", a: ["इओसिनोफिल्स", "बेसोफिल्स", "न्यूट्रोफिल्स",
