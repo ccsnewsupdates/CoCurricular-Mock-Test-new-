@@ -2,152 +2,551 @@
 <html lang="hi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>University Gyaan - First Aid Mock Test</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>University Gyaan - Mock Test 2</title>
+    
     <style>
-        :root { --p: #003366; --s: #0056b3; --acc: #ffd700; --white: #ffffff; }
-        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; margin: 0; padding: 0; }
-        header { background: var(--p); color: white; text-align: center; padding: 20px; border-bottom: 4px solid var(--acc); }
-        .container { max-width: 900px; margin: 20px auto; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        .screen { display: none; }
-        .active { display: block; }
-        .input-group { margin-bottom: 15px; }
-        label { display: block; font-weight: bold; margin-bottom: 5px; }
-        input { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; }
-        .btn { width: 100%; padding: 15px; border: none; border-radius: 8px; font-size: 1.1rem; font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 10px; }
-        .btn-start { background: var(--s); color: white; }
-        .btn-start:hover { background: var(--p); }
-        .q-box { font-size: 1.2rem; font-weight: bold; margin-bottom: 20px; padding: 15px; border-left: 5px solid var(--s); background: #f9f9f9; line-height: 1.5; }
-        .opt { display: block; width: 100%; padding: 12px; margin: 8px 0; border: 2px solid #eee; border-radius: 8px; text-align: left; cursor: pointer; font-size: 1rem; transition: 0.2s; }
-        .opt:hover { border-color: var(--s); background: #f0f7ff; }
-        .selected { border-color: var(--s); background: #e7f1ff; }
-        .review-item { padding: 15px; border-bottom: 1px solid #ddd; margin-bottom: 10px; }
-        .correct { color: #28a745; font-weight: bold; }
-        .wrong { color: #dc3545; font-weight: bold; }
-        .summary-card { background: var(--p); color: white; padding: 20px; border-radius: 10px; text-align: center; margin-bottom: 30px; }
+        :root {
+            --primary: #4a90e2; 
+            --bg-color: #e0e5ec;
+            --text-color: #4a4a4a;
+            --shadow-light: #ffffff;
+            --shadow-dark: #a3b1c6;
+            --inner-shadow: inset 6px 6px 12px var(--shadow-dark), inset -6px -6px 12px var(--shadow-light);
+            --outer-shadow: 9px 9px 16px var(--shadow-dark), -9px -9px 16px var(--shadow-light);
+        }
+
+        body { 
+            font-family: 'Segoe UI', Arial, sans-serif; margin: 0; 
+            background: var(--bg-color); color: var(--text-color);
+            height: 100vh; overflow: hidden; display: flex; flex-direction: column; 
+        }
+
+        /* --- 3D UTILS --- */
+        .neumorphic {
+            background: var(--bg-color);
+            border-radius: 20px;
+            box-shadow: var(--outer-shadow);
+            border: 1px solid rgba(255,255,255,0.4);
+        }
+
+        /* --- LOGO STYLES --- */
+        .app-logo-large {
+            width: 80px; height: 80px; object-fit: contain;
+            border-radius: 50%;
+            margin-bottom: 10px;
+            box-shadow: var(--outer-shadow);
+            border: 2px solid white;
+        }
+        
+        .header-logo {
+            height: 40px; width: 40px; object-fit: contain;
+            border-radius: 50%; border: 1px solid white;
+        }
+
+        /* --- ENTRY PAGE --- */
+        #entry-page {
+            position: fixed; inset: 0; background: var(--bg-color); z-index: 1000;
+            display: flex; flex-direction: column; align-items: center; 
+            padding: 30px 20px; overflow-y: auto;
+        }
+        .entry-card {
+            padding: 30px; width: 100%; max-width: 450px; text-align: center; margin-top: 10px;
+            display: flex; flex-direction: column; align-items: center;
+        }
+        .input-group { margin-bottom: 20px; text-align: left; width: 100%; }
+        .input-group label { display: block; margin-bottom: 8px; font-weight: 700; margin-left: 5px;}
+        .input-group input, .input-group select { 
+            width: 100%; padding: 15px; border: none; border-radius: 12px;
+            background: var(--bg-color);
+            box-shadow: var(--inner-shadow);
+            font-size: 1rem; box-sizing: border-box; outline: none; transition: 0.3s;
+        }
+        .input-group input:focus { box-shadow: inset 3px 3px 6px var(--shadow-dark), inset -3px -3px 6px var(--shadow-light); }
+
+        .btn-start { 
+            background: #4a90e2; color: white; border: none; padding: 15px; width: 100%;
+            font-size: 1.3rem; font-weight: bold; border-radius: 50px; cursor: pointer;
+            box-shadow: 6px 6px 10px rgba(74, 144, 226, 0.4), -6px -6px 10px #ffffff;
+            transition: transform 0.2s; margin-top: 10px;
+            text-decoration: none; display: inline-block;
+        }
+        .btn-start:active { box-shadow: inset 3px 3px 6px rgba(0,0,0,0.2); transform: scale(0.98); }
+
+        /* --- EXAM PAGE --- */
+        #exam-page { display: none; height: 100%; flex-direction: column; }
+        
+        header { 
+            padding: 10px 15px; 
+            background: var(--bg-color); z-index: 10;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+        header h2 { margin: 0; color: var(--primary); font-size: 1.2rem; text-shadow: 1px 1px 1px white; }
+
+        .main-container { 
+            display: flex; flex-direction: column; flex: 1; 
+            padding: 15px; gap: 20px; overflow: hidden; 
+        }
+        
+        .question-area { 
+            flex: 1; padding: 20px; display: flex; flex-direction: column; 
+            overflow-y: auto; position: relative;
+        }
+        
+        .info-bar { 
+            display: flex; justify-content: space-between; margin-bottom: 20px; 
+            font-weight: bold; padding: 10px 15px; border-radius: 12px;
+            box-shadow: var(--inner-shadow);
+        }
+        .timer { color: #e74c3c; font-size: 1.1rem; }
+        
+        #q-content { flex-grow: 1; overflow-y: auto; padding-right: 5px; }
+        #question-text { 
+            font-size: 1.1rem; line-height: 1.5; margin: 0 0 20px 0; color: #333; font-weight: 600;
+        }
+
+        /* Options */
+        .option-card { 
+            padding: 12px 15px; border-radius: 15px; margin-bottom: 12px;
+            cursor: pointer; transition: 0.2s; display: flex; align-items: flex-start; gap: 12px;
+            background: var(--bg-color);
+            box-shadow: 5px 5px 10px var(--shadow-dark), -5px -5px 10px var(--shadow-light);
+            border: 2px solid transparent;
+        }
+        .option-card:active { box-shadow: var(--inner-shadow); transform: translateY(2px); }
+        .option-card.selected { 
+            border-color: var(--primary); background: #ebf5ff; 
+            box-shadow: var(--inner-shadow);
+        }
+        
+        /* Bilingual Option Styling */
+        .opt-char { font-weight: 900; color: var(--primary); font-size: 1.2rem; min-width: 25px; margin-top: 2px; }
+        .opt-text-en { font-weight: 600; color: #333; font-size: 1rem; line-height: 1.3; }
+        .opt-text-hi { font-size: 0.9rem; color: #666; margin-top: 4px; font-weight: normal; }
+
+        /* Buttons */
+        .controls { margin-top: auto; display: flex; gap: 15px; padding-top: 10px; }
+        .btn { 
+            flex: 1; border: none; padding: 12px; border-radius: 12px; 
+            cursor: pointer; font-weight: 700; color: #555; font-size: 0.9rem; 
+            background: var(--bg-color);
+            box-shadow: 5px 5px 10px var(--shadow-dark), -5px -5px 10px var(--shadow-light);
+        }
+        .btn:active { box-shadow: var(--inner-shadow); color: var(--primary); }
+        .btn-submit { color: #e74c3c; flex: 1.5; } 
+
+        /* Palette */
+        .palette-area { 
+            height: 90px; padding: 10px; flex-shrink: 0; display: flex; flex-direction: column;
+        }
+        .q-grid { 
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(35px, 1fr)); 
+            gap: 10px; overflow-y: auto; padding: 5px; 
+        }
+        .q-badge { 
+            height: 35px; display: flex; align-items: center; justify-content: center;
+            border-radius: 50%; font-size: 0.8rem; font-weight: bold; color: #777;
+            background: var(--bg-color);
+            box-shadow: 3px 3px 6px var(--shadow-dark), -3px -3px 6px var(--shadow-light);
+            cursor: pointer;
+        }
+        .q-badge.current { border: 2px solid var(--primary); color: var(--primary); transform: scale(1.1); }
+        .q-badge.answered { background: var(--primary); color: white; box-shadow: inset 2px 2px 5px rgba(0,0,0,0.2); }
+        .q-badge.flagged { background: #f1c40f; color: black; }
+
+        /* Mobile Fixes */
+        @media (max-width: 768px) {
+            .main-container { padding: 10px; gap: 15px; }
+            .option-card { padding: 12px; }
+            .btn { padding: 10px 5px; font-size: 0.8rem; }
+            .opt-text-en { font-size: 0.95rem; }
+            .opt-text-hi { font-size: 0.85rem; }
+        }
+
+        /* --- MODAL --- */
+        .modal { 
+            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); 
+            z-index: 2000; align-items: center; justify-content: center; padding: 20px;
+        }
+        .modal-content { 
+            background: var(--bg-color); padding: 30px; border-radius: 20px; text-align: center; width: 100%; max-width: 350px; 
+            box-shadow: var(--outer-shadow); display: flex; flex-direction: column; align-items: center;
+        }
     </style>
 </head>
 <body>
 
-<header>
-    <h1>UNIVERSITY GYAAN</h1>
-    <p>First Aid & Health (प्राथमिक उपचार एवं स्वास्थ्य) Mock Test</p>
-</header>
+    <div id="entry-page">
+        <div class="entry-card neumorphic">
+            <img src="logo.jpg" alt="Logo" class="app-logo-large">
+            
+            <h1 style="color:var(--primary); margin: 5px 0 5px 0;">University Gyaan</h1>
+            <p style="margin: 0 0 20px 0; color: #777;">Mock Test 2 (100 Questions)</p>
+            
+            <div class="input-group">
+                <label>Name / नाम</label>
+                <input type="text" id="student-name" placeholder="अपना नाम लिखें">
+            </div>
+            <div class="input-group">
+                <label>Stream / कक्षा</label>
+                <select id="student-class">
+                    <option value="BA">B.A.</option>
+                    <option value="B.Sc.">B.Sc.</option>
+                    <option value="B.Com">B.Com</option>
+                    <option value="Home Science">Home Science</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label>Roll No. / रोल नंबर</label>
+                <input type="tel" id="student-roll" placeholder="अपना रोल नंबर लिखें">
+            </div>
+            
+            <div style="text-align: left; margin: 15px 0; font-size: 0.9rem; color: #555; width:100%;">
+                <p>⚠️ <b>Note:</b> You need at least <b>33 Correct Answers</b> to Pass.</p>
+            </div>
 
-<div class="container">
-    <div id="setup" class="screen active">
-        <h2 style="text-align: center;">Candidate Details</h2>
-        <div class="input-group"><label>Name:</label><input type="text" id="name" placeholder="अपना नाम लिखें"></div>
-        <div class="input-group"><label>Roll Number:</label><input type="text" id="roll" placeholder="रोल नंबर लिखें"></div>
-        <div class="input-group"><label>Class:</label><input type="text" id="class" placeholder="कक्षा लिखें"></div>
-        <button class="btn btn-start" onclick="startTest(1)">Start Mock Test - 1 (1-100)</button>
-        <button class="btn btn-start" onclick="startTest(2)">Start Mock Test - 2 (101-187)</button>
-    </div>
-
-    <div id="quiz" class="screen">
-        <div id="qInfo" style="font-weight: bold; color: var(--s); margin-bottom: 10px;"></div>
-        <div id="qText" class="q-box"></div>
-        <div id="opts"></div>
-        <button class="btn btn-start" id="nextBtn" onclick="next()" style="display: none;">Next Question ➔</button>
-    </div>
-
-    <div id="result" class="screen">
-        <div class="summary-card">
-            <h2>Result Summary</h2>
-            <div id="userD"></div>
-            <h1 id="score"></h1>
+            <button class="btn-start" onclick="startExam()">START EXAM</button>
         </div>
-        <h3>Review Questions (समीक्षा)</h3>
-        <div id="review"></div>
-        <button class="btn btn-start" onclick="location.reload()">Back to Home</button>
     </div>
-</div>
 
-<script>
-const allQ = [
-    { q: "1. [cite_start]पीड़ित व्यक्ति के जले हुए भाग को साफ या रोगाणुहीन ड्रेसिंग से क्यों ढका जाना चाहिए?[span_0](end_span)", a: ["जले हुए भाग को गर्म रखने के लिए", "जले हुए भाग को ठंडा करने के लिए", "संक्रमण को रोकने के लिए", "(a) और (b) दोनों"], c: 2 },
-    { q: "2. [span_1](start_span)किस जले हुए पीड़ित के लिए तुरंत अपने स्थानीय आपातकालीन फोन नंबर पर कॉल करना चाहिए?[span_1](end_span)", a: ["गर्म कॉफी से जला हाथ", "सनबर्न", "हाथ और बांह पर छाले", "उपरोक्त सभी"], c: 2 },
-    { q: "3. [span_2](start_span)मानव शरीर में कितने अंगुल्यस्थियाँ (Phalanges) होते हैं?[span_2](end_span)", a: ["12", "15", "14", "10"], c: 2 },
-    { q: "4. [span_3](start_span)दर्द कम करना ........ का पहला उद्देश्य है।[span_3](end_span)", a: ["प्राथमिक उपचार", "दवा", "ICU उपचार", "सर्जरी"], c: 0 },
-    { q: "5. [span_4](start_span)चेहरे पर केमिकल छिड़कने पर एम्बुलेंस आने तक आप क्या करेंगे?[span_4](end_span)", a: ["जले हुए भाग को कवर करेंगे", "पीड़ित को शांत रखेंगे", "पीड़ित को तुरंत अस्पताल ले जाएँगे", "बड़ी मात्रा में पानी से धोएँगे"], c: 3 },
-    { q: "6. [span_5](start_span)स्प्लिंट का उपयोग तभी करना चाहिए जब-[span_5](end_span)", a: ["पीड़ित को स्थानांतरित करना हो", "पीड़ित को चोट पहुँचाए बिना कर सकते हैं", "(a) और (b) दोनों", "सामग्री उपलब्ध हो"], c: 2 },
-    { q: "7. [span_6](start_span)किसी मरीज की स्थिति की जांच करते समय सबसे पहले क्या कार्रवाई की जाती है?[span_6](end_span)", a: ["सांस लेने की जाँच करें", "बीमा के लिए जाँच करें", "बाहरी चोटों की जाँच करें", "पीड़ित से बात करें और उसके कंधे हिलाएं"], c: 3 },
-    { q: "8. [span_7](start_span)एक दौरा पीड़ित की देखभाल करते समय किस बात का ध्यान रखना चाहिए?[span_7](end_span)", a: ["पीड़ित को सीधा पकड़ना", "दांतों के बीच कपड़ा रखना", "आस-पास की वस्तुओं को हटाना", "उपरोक्त सभी"], c: 2 },
-    { q: "9. [span_8](start_span)नुकीले हथियार से होने वाला घाव कौन-सा है?[span_8](end_span)", a: ["कटे हुए घाव", "पंचर घाव", "बंद घाव", "विदीर्ण घाव"], c: 1 },
-    { q: "10. [span_9](start_span)फर्स्ट डिग्री बर्न है-[span_9](end_span)", a: ["त्वचा की सभी परतों को नष्ट कर देना", "लाल और छाला होना", "केवल त्वचा की ऊपरी परत का शामिल होना", "जलने में सबसे गंभीर है"], c: 2 },
-    { q: "11. [span_10](start_span)निम्नलिखित में से कौन-से लक्षण आंतरिक रक्तस्राव का संकेत देते हैं?[span_10](end_span)", a: ["तेजी से कमजोर नाड़ी, अत्यधिक प्यास", "ठंडी या नीली त्वचा", "कोमल अंग सूजे हुए", "उपरोक्त सभी"], c: 3 },
-    { q: "12. [span_11](start_span)हाथ पर कोई वस्तु लगने से घाव होने पर क्या करना चाहिए?[span_11](end_span)", a: ["वस्तु को हटाएँ", "वस्तु को तोड़ दें", "चारों ओर ड्रेसिंग करके वस्तु को स्थिर करें", "कोई नहीं"], c: 2 },
-    { q: "13. [span_12](start_span)निम्नलिखित में से सदमे का लक्षण नहीं है-[span_12](end_span)", a: ["तेज प्यास, मतली", "तेजी से श्वास", "बेचैनी", "छाती या पेट में दर्द"], c: 3 },
-    { q: "14. [span_13](start_span)छात्र का मुँह में चोट लगने से दांत टूट गया है, क्या करेंगे?[span_13](end_span)", a: ["रक्तस्त्राव नियंत्रित करें", "दूध या पानी में दाँत बचाएँ", "(a) और (b) दोनों", "दाँत को सूखे ऊतक में लपेटें"], c: 2 },
-    { q: "15. [span_14](start_span)जिन घावों में टांके लगाने पड़ते हैं, वे-[span_14](end_span)", a: ["एक इंच से अधिक लंबे हों", "अनियंत्रित रक्तस्त्राव", "मानव या पशु काटने पर", "उपरोक्त सभी"], c: 3 },
-    { q: "16. [span_15](start_span)खूनी नाक (Nosebleed) वाले पीड़ित की देखभाल कैसे करेंगे?[span_15](end_span)", a: ["नथुनों को पिंच करते हुए सिर को थोड़ा पीछे झुकाकर बैठाएँ", "होंठ पर दबाव", "आइस पैक", "नथुनों को पिंच करते हुए सिर को थोड़ा आगे झुकाकर बैठाएँ"], c: 0 },
-    { q: "17. [span_16](start_span)मनुष्य के शरीर के दायें फेफड़े का वजन कितने ग्राम का होता है?[span_16](end_span)", a: ["620", "570", "470", "680"], c: 0 },
-    { q: "18. [span_17](start_span)श्वसन क्रिया है-[span_17](end_span)", a: ["अनावश्यक क्रिया", "अनैच्छिक क्रिया", "ऐच्छिक क्रिया", "इनमें से कोई नहीं"], c: 1 },
-    { q: "19. [span_18](start_span)मनुष्य सामान्यतया कितनी वायु ग्रहण करता है?[span_18](end_span)", a: ["1640 मिली", "500 मिली", "3500 मिली", "1200 मिली"], c: 1 },
-    { q: "20. [span_19](start_span)जल रक्त को बनाये रखता है-[span_19](end_span)", a: ["ठण्डा", "तरल", "गाढ़ा", "गर्म"], c: 1 },
-    { q: "21. [span_20](start_span)एक स्वस्थ व्यक्ति एक मिनट में कितनी बार श्वास लेता है?[span_20](end_span)", a: ["15-20 बार", "10-20 बार", "20-25 बार", "12-14 बार"], c: 0 },
-    { q: "22. [span_21](start_span)मनुष्य के शरीर में फुफ्फुसों की संख्या कितनी होती है?[span_21](end_span)", a: ["चार", "तीन", "दो", "पाँच"], c: 2 },
-    { q: "23. [span_22](start_span)फेफड़ों से ऑक्सीजन को रक्त का कौन-सा भाग ग्रहण करता है?[span_22](end_span)", a: ["प्लाज्मा", "हीमोग्लोबिन", "श्वेत रक्त कणिकायें", "रक्त कणिकायें"], c: 1 },
-    { q: "24. [span_23](start_span)प्रश्वसन में सहायक होती है-[span_23](end_span)", a: ["ऐच्छिक पेशियाँ", "अन्तः अन्तरापर्शक पेशियाँ", "बाह्य अन्तरापर्शक पेशियाँ", "हृदय पेशियाँ"], c: 2 },
-    { q: "25. [span_24](start_span)मनुष्य के शरीर में फेफड़ों की संख्या कितनी होती है?[span_24](end_span)", a: ["2", "4", "1", "अनेक"], c: 0 },
-    { q: "26. [span_25](start_span)व्यक्ति के डूबने पर निम्न सहायता दी जाती है-[span_25](end_span)", a: ["स्नान कराया जाता है", "घाव की पट्टी", "गर्म पेय", "कृत्रिम श्वास"], c: 3 },
-    { q: "27. [span_26](start_span)वायु को श्वास द्वारा फेफड़ों में ग्रहण करना क्या कहलाता है?[span_26](end_span)", a: ["श्वसन", "साँस लेना", "निःश्वसन", "प्रश्वसन"], c: 3 },
-    { q: "28. [span_27](start_span)श्वसन का प्रमुख अंग कौन-सा है?[span_27](end_span)", a: ["त्वचा", "आमाशय", "फेफड़े", "मुखगुहा"], c: 2 },
-    { q: "29. [span_28](start_span)ऑक्सीजन द्वारा रक्त का शुद्धीकरण कहाँ होता है?[span_28](end_span)", a: ["पाचन अंग", "त्वचा", "हृदय", "फुफ्फुस (फेफड़े)"], c: 3 },
-    { q: "30. [span_29](start_span)अशुद्ध रक्त किस गैस को ग्रहण करके शुद्ध हो जाता है?[span_29](end_span)", a: ["O2", "CO2", "H2O", "कोई नहीं"], c: 0 },
-    { q: "31. [span_30](start_span)सिल्वेस्टर विधि में कृत्रिम श्वास देने के लिए कितने व्यक्तियों की आवश्यकता होती है?[span_30](end_span)", a: ["एक", "चार", "तीन", "दो"], c: 3 },
-    { q: "32. [span_31](start_span)रक्त में ऑक्सीजन की मात्रा कम होने पर वह-[span_31](end_span)", a: ["बैंगनी रंग में परिवर्तित", "नीले रंग का", "चमकीले लाल", "उपर्युक्त सभी"], c: 0 },
-    { q: "33. [span_32](start_span)मुँह से खून निकलना, पेट में संकुचन और कमजोर नाड़ी किसके लक्षण हैं?[span_32](end_span)", a: ["सिर की चोट", "जहर", "ड्रग ओवरडोज", "आंतरिक रक्तस्त्राव"], c: 3 },
-    { q: "34. [span_33](start_span)आपात स्थिति में आप कौन-से तीन बुनियादी कदम उठा सकते हैं?[span_33](end_span)", a: ["चेक, कॉल, केयर", "कॉल, चेक, केयर", "पहचानें, निर्णय लें", "निर्णय लें, निष्पादित करें"], c: 0 },
-    { q: "35. [span_34](start_span)आँख में काँटा लगने पर क्या करेंगे?[span_34](end_span)", a: ["काँटा अंदर छोड़ दो, मदद बुलाओ", "पानी से धो लें", "चिमटी से निकालें", "दोनों आँखें ढकें"], c: 0 },
-    { q: "36. [span_35](start_span)शुद्ध रक्त बहता है-[span_35](end_span)", a: ["पश्च महाशिरा में", "अग्र महाशिरा में", "फुफ्फुस शिरा में", "उपर्युक्त सभी"], c: 2 },
-    { q: "37. आठ साल का बच्चा बेहोश है और वायुमार्ग अवरुद्ध है। [span_36](start_span)क्या करेंगे?[span_36](end_span)", a: ["बचाव श्वास", "सीपीआर शुरु करें", "पेट पर जोर दें", "उपरोक्त सभी"], c: 2 },
-    { q: "38. [span_37](start_span)वयस्क पर सीपीआर करते समय छाती का संकुचन कितना गहरा होना चाहिए?[span_37](end_span)", a: ["1.5 इंच", "2.5 इंच", "2 इंच", "3 इंच"], c: 2 },
-    { q: "39. [span_38](start_span)हृदय द्वारा महत्त्वपूर्ण कार्य किया जाता है-[span_38](end_span)", a: ["धड़कना", "पोषक तत्त्व संचित करना", "श्वसन में सहायता", "शुद्ध रक्त शरीर में पहुँचाना व अशुद्ध फेफड़ों में"], c: 3 },
-    { q: "40. [span_39](start_span)मधुमेह (Diabetes) टैग पहने बेहोश पीड़ित के लिए क्या करेंगे?[span_39](end_span)", a: ["सांस और नाड़ी की जाँच", "सीपीआर शुरु करें", "इंसुलिन दें", "बचाव श्वास"], c: 0 },
-    { q: "41. [span_40](start_span)एक बच्चे पर सीपीआर करते समय छाती का संकुचन कितना गहरा होना चाहिए?[span_40](end_span)", a: ["3 इंच", "2 इंच", "2.5 इंच", "1.5 इंच"], c: 3 },
-    { q: "42. [span_41](start_span)अशुद्ध रक्त बहता है-[span_41](end_span)", a: ["पृष्ठ महाधमनी में", "प्लीहा-जठर धमनी में", "यकृत धमनी में", "फुफ्फुसीय धमनी में"], c: 3 },
-    { q: "43. [span_42](start_span)परिसंचरण तन्त्र का मुख्यतम अंग है-[span_42](end_span)", a: ["फेफड़े", "शिराएँ", "धमनियाँ", "हृदय"], c: 3 },
-    { q: "44. [span_43](start_span)स्वस्थ मनुष्य का सामान्य रुधिर दाब पारे के कितने मिमी के बराबर होता है?[span_43](end_span)", a: ["25-55", "105-130", "80-55", "120/80 (As per key d: 55-80)"], c: 3 },
-    { q: "45. [span_44](start_span)प्रोथ्रोम्बिन निर्माण के लिए किस विटामिन की आवश्यकता होती है?[span_44](end_span)", a: ["D", "B", "A", "K"], c: 3 },
-    { q: "46. [span_45](start_span)लाल रक्त कणिकाओं का लाल रंग किससे प्राप्त होता है?[span_45](end_span)", a: ["हीमोग्लोबिन", "जीवद्रव्य", "प्लाज्मा", "कोई नहीं"], c: 0 },
-    { q: "47. [span_46](start_span)लाल रक्त कोशिकाओं में पाया जाने वाला पदार्थ है-[span_46](end_span)", a: ["हीमोग्लोबिन", "प्लाज्मा", "प्रोटीन", "कोई नहीं"], c: 0 },
-    { q: "48. [span_47](start_span)श्वेत रुधिर कणिकाओं का कार्य है-[span_47](end_span)", a: ["रोगाणुओं को नष्ट करना", "प्रतिविष तैयार करना", "रक्षा करना", "उपर्युक्त सभी"], c: 3 },
-    { q: "49. [span_48](start_span)एंटीजन A तथा B के आधार पर रक्त समूह कितने भागों में बाँटे गए हैं?[span_48](end_span)", a: ["दो", "पाँच", "चार", "छ:"], c: 2 },
-    { q: "50. [span_49](start_span)शरीर-रक्षक कणिकाएँ हैं-[span_49](end_span)", a: ["प्लेटलेट्स", "लाल रक्त कणिकाएँ", "श्वेत रक्त कणिकाएँ", "फाईब्रिनोजन"], c: 2 },
-    { q: "51. [span_50](start_span)पोषक तत्वों तथा ऑक्सीजन को शरीर के अंगों में पहुँचाने वाला तन्त्र-[span_50](end_span)", a: ["पाचन तन्त्र", "श्वसन तन्त्र", "परिसंचरण तन्त्र", "विसर्जन तन्त्र"], c: 2 },
-    { q: "52. [span_51](start_span)रक्त परिसंचरण संस्थान के कितने अंग हैं?[span_51](end_span)", a: ["चार", "तीन", "दो", "पाँच"], c: 0 },
-    { q: "53. [span_52](start_span)उम्र विशेष की स्थिति से अधिक रक्त दाब क्या कहलाता है?[span_52](end_span)", a: ["उच्च रक्त दाब", "अल्प रक्त दाब", "निम्न रक्त दाब", "कोई नहीं"], c: 0 },
-    { q: "54. [span_53](start_span)रक्त परिभ्रमण का केन्द्र स्थल क्या है?[span_53](end_span)", a: ["वृक्क", "फेफड़े", "हृदय", "कोशिका"], c: 2 },
-    { q: "55. [span_54](start_span)बिजली का झटका (Electric Shock) लगने पर सबसे पहले क्या करें?[span_54](end_span)", a: ["जले भाग को कवर करें", "सुनिश्चित करें कि बिजली बंद है", "सिर नीचे रखें", "मरीज को स्थानांतरित करें"], c: 1 },
-    { q: "56. [span_55](start_span)प्राथमिक उपचार के सही क्रम को व्यवस्थित करें-[span_55](end_span)", a: ["2,4,3,1", "4,3,2,1", "1,2,3,4", "4,2,1,3"], c: 2 },
-    { q: "57. [span_56](start_span)जीवन सहायता में ABC का अर्थ है-[span_56](end_span)", a: ["कोई नहीं", "एयरवे, ब्रिज, कैनाल", "एयरवे, ब्रीथिंग, सर्कुलेशन", "एक्शन, सर्कुलेशन, ब्रीथिंग"], c: 2 },
-    { q: "58. [span_57](start_span)निम्नलिखित में से कौन-सा प्राथमिक चिकित्सा का उद्देश्य है?[span_57](end_span)", a: ["जीवन की रक्षा", "चोटों को सीमित करना", "स्वास्थ्य लाभ", "उपरोक्त सभी"], c: 3 },
-    { q: "59. [span_58](start_span)चिकित्सा प्राथमिक उपचार में DRAB का पूर्णरूप क्या है?[span_58](end_span)", a: ["ड्रैग, रेस्पोंस...", "डेंजर, रिएक्ट...", "डेंजर, रेस्पोंस, एयरवे, ब्रीथिंग", "ड्रैग, रिएक्ट..."], c: 2 },
-    { q: "60. [span_59](start_span)प्राथमिक चिकित्सा में कौन-सी तकनीक का उपयोग किया जाता है?[span_59](end_span)", a: ["पट्टी", "परिवहन तकनीक", "बैंडेज", "उपरोक्त सभी"], c: 3 },
-    { q: "61. [span_60](start_span)एक अच्छी पट्टी ........ होनी चाहिए।[span_60](end_span)", a: ["कीटाणुओं वाली", "गीली", "तैलीय", "रोगाणु मुक्त"], c: 3 },
-    { q: "62. [span_61](start_span)दम घुटने वाले शिशु के लिए क्या करेंगे?[span_61](end_span)", a: ["पीठ पर वार और छाती पर दबाव", "सी०पी०आर०", "हेमलिक प्रक्रिया", "शिशु को उल्टा पकड़ें"], c: 0 },
-    { q: "63. [span_62](start_span)बांह के अग्र भाग पर रक्तस्त्राव रोकने हेतु दबाव कहाँ लागू करेंगे?[span_62](end_span)", a: ["कंधे और कोहनी के बीच हाथ के अंदर", "कोहनी के अंदर", "हाथ के बाहर", "कोई नहीं"], c: 0 },
-    { q: "64. [span_63](start_span)कौन-सा व्यवहार चोट के जोखिम को कम करता है?[span_63](end_span)", a: ["सुरक्षा बेल्ट पहनना", "शराब सीमित करना", "(a) और (b) दोनों", "कोलेस्ट्रॉल सीमित करना"], c: 2 },
-    { q: "65. [span_64](start_span)अधिकांश चोटें उन स्थितियों के कारण होती हैं-[span_64](end_span)", a: ["नियंत्रण नहीं था", "पानी के खेल", "5+ लोग", "जिन पर नियंत्रण था"], c: 3 },
-    { q: "66. [span_65](start_span)खुले घावों की देखभाल में संक्रमण का जोखिम कैसे कम करें?[span_65](end_span)", a: ["हाथ धो लें", "सीधे संपर्क से बचें", "दस्ताने प्रयोग करें", "उपरोक्त सभी"], c: 3 },
-    { q: "67. [span_66](start_span)पीड़ित व्यक्ति के लिए ड्रेसिंग और पट्टियों का उपयोग कब किया जाता है?[span_66](end_span)", a: ["रक्तस्त्राव नियंत्रित व संक्रमण रोकने हेतु", "आंतरिक रक्तस्त्राव हेतु", "दर्द कम करने हेतु", "अस्पताल ले जाने हेतु"], c: 0 },
-    { q: "68. [span_67](start_span)खून बहने वाले घावों की देखभाल में पहला कदम क्या है?[span_67](end_span)", a: ["ऊपर उठाना", "दबाव बिन्दु", "भारी ड्रेसिंग", "विसंक्रमित ड्रेसिंग के साथ सीधा दबाव"], c: 3 },
-    { q: "69. [span_68](start_span)आंतरिक रक्तस्राव के कारण हो सकते हैं-[span_68](end_span)", a: ["दवा", "बीमारी", "चोट", "उपरोक्त सभी"], c: 2 },
-    { q: "70. [span_69](start_span)पीड़ित व्यक्ति को बचाव श्वास (Rescue Breathing) कब देनी चाहिए?[span_69](end_span)", a: ["सचेत घुटन", "बेहोश, सांस नहीं ले रहा पर नाड़ी है", "बेहोश, नाड़ी नहीं", "बेहोश घुटन"], c: 1 },
-    { q: "71. [span_70](start_span)शीतदंश (Frostbite) पीड़ित की देखभाल में क्या 'नहीं' करना चाहिए?[span_70](end_span)", a: ["गर्म पानी में भिगोना", "फफोले फोड़ना", "धीरे से संभालना", "जोर से रगड़ना"], c: 3 },
-    { q: "72. [span_71](start_span)आंतरिक रक्तस्त्राव वाले पीड़ित के लिए क्या करेंगे?[span_71](end_span)", a: ["चुप कराकर लिटा दें", "घुटनों को मोड़कर आराम", "(a) और (b) दोनों", "कोई नहीं"], c: 2 },
-    { q: "73. [span_72](start_span)EMS प्रणाली में आपकी भूमिका के चार चरण हैं-[span_72](end_span)", a: ["पहचानें, निर्णय लें, कॉल करें, प्रदान करें", "चेक, कॉल, बचाव", "ऊँचा करना...", "कोई नहीं"], c: 0 },
-    { q: "74. [span_73](start_span)लू लगना (Heat Stroke) क्या है?[span_73](end_span)", a: ["तापमान में अत्यधिक वृद्धि", "लाल या शुष्क त्वचा", "कमजोर नाड़ी, उथली श्वास", "उपरोक्त सभी"], c: 3 },
-    { q: "75. [span_74](start_span)शरीर का अंग कटा या फटा होने पर क्या करेंगे?[span_74](end_span)", a: ["ड्रेसिंग में लपेटें", "प्लास्टिक बैग में रखें", "बैग बर्फ पर रखें + अस्पताल", "उपरोक्त सभी"], c: 3 },
-    { q: "76. [span_75](start_span)शिशु सी०पी०आर० में हवा पेट में जाने से कैसे बचें?[span_75](end_span)", a: ["धीरे-धीरे", "सही और तेज", "कठिन और तेज", "लंबी और कठिन"], c: 0 },
-    { q: "77. [span_76](start_span)लड़की का दाँत टूटकर गिर जाने पर क्या क्रिया सर्वोत्तम है?[span_76](end_span)", a: ["ठंडे दूध या पानी में रखें", "ड्रेसिंग में रखें", "बलग के नीचे", "जीभ के नीचे"], c: 0 },
-    { q: "78. [span_77](start_span)सांप के काटने (Snake Bite) पर क्या करेंगे?[span_77](end_span)", a: ["बर्फ लगाएँ", "ऊपर उठाएँ", "क्रॉस काटें", "घाव धोएँ, हृदय से नीचे रखें + चिकित्सा"], c: 3 },
-    { q: "79. [span_78](start_span)दिल का दौरा (Heart Attack) पीड़ित के पास दवा है तो क्या करें?[span_78](end_span)", a: ["जीभ के नीचे दवा", "लिटा दें", "सीपीआर शुरू", "सहायता करें, 112 कॉल, आश्वस्त करें"], c: 3 },
-    { q: "80. [span_79](start_span)पीड़ित मदद से इंकार करता है फिर बेहोश हो जाता है, क्या करेंगे?[span_79](end_span)", a: ["अनुमति 'निहित' है", "112 कॉल + देखभाल", "(a) और (b) दोनों", "प्रतीक्षा"], c: 2 },
-    { q: "81. [span_80](start_span)पैरों में शीतदंश (Frostbite) होने पर क्या करना चाहिए?[span_80](end_span)", a: ["जोर से रगड़ें", "गर्म नम तौलिये", "90C पानी", "105C से कम गर्म पानी में भिगोएँ"], c: 3 },
-    { q: "82. [span_81](start_span)छात्र के कमर में गंभीर कट होने पर क्या करेंगे?[span_81](end_span)", a: ["अस्पताल ले जाएँ", "पैर ऊपर उठाएँ", "सीधे दबाव वाली ड्रेसिंग", "ड्रेसिंग + ऊरु धमनी पर दबाव"], c: 2 },
-    { q: "83. [span_82](start_span)प्लाज्मा में किस प्रकार का प्रोटीन पाया जाता है?[span_82](end_span)", a: ["एल्ब्यूमिन", "ग्लोल्यूलिन", "फाइब्रिनोजन", "उपर्युक्त सभी"], c: 3 },
-    { q: "84. [span_83](start_span)कोशिकाओं में शुद्ध रक्त की क्रिया से ऊर्जा के साथ क्या बनता है?[span_83](end_span)", a: ["कार्बन डाइ-ऑक्साइड", "माइटोकॉण्ड्रिया", "एल्युमीनियम", "लाइसोसोम"], c: 0 },
-    { q: "85. [span_84](start_span)न्यूट्रोफिल्स (Neutrophils) की संख्या WBC में कितनी होती है?[span_84](end_span)", a: ["प्रकार", "70%", "बहुरूपी", "उपर्युक्त सभी"], c: 1 },
-    { q: "86. [span_85](start_span)कणिकामय श्वेत रक्त कणिकाएँ (Granular WBC) हैं-[span_85](end_span)", a: ["इओसिनोफिल्स", "बेसोफिल्स", "न्यूट्रोफिल्स",
+    <div id="exam-page">
+        <header>
+            <img src="logo.jpg" alt="Logo" class="header-logo">
+            <h2>First Aid & Health (Mock 2)</h2>
+        </header>
+
+        <div class="main-container">
+            <div class="question-area neumorphic" id="q-area">
+                <div class="info-bar">
+                    <span style="color:var(--primary)">Q. <span id="q-num">1</span> / 100</span>
+                    <span class="timer" id="timer">120:00</span>
+                </div>
+                
+                <div id="q-content">
+                    <h3 id="question-text">Loading...</h3>
+                    <div id="options-container"></div>
+                </div>
+
+                <div class="controls">
+                    <button class="btn" onclick="prevQ()">Prev</button>
+                    <button class="btn" style="color:#f39c12" onclick="toggleFlag()">Flag</button>
+                    <button class="btn" style="color:var(--primary)" onclick="nextQ()">Next</button>
+                    <button class="btn btn-submit" onclick="attemptFinish()">Submit</button>
+                </div>
+            </div>
+
+            <div class="palette-area neumorphic">
+                <div class="q-grid" id="q-grid"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <img src="logo.jpg" alt="Logo" class="app-logo-large" style="width:60px; height:60px;">
+            
+            <h2 id="modal-title" style="margin: 10px 0 0 0;">Exam Submitted!</h2>
+            <div id="score-summary" style="margin: 20px 0; font-size: 1.1rem; font-weight: bold;"></div>
+            
+            <div id="download-section" style="width: 100%;"></div>
+            
+            <button class="btn" style="margin-top:20px; background:none; box-shadow:none; color:red;" onclick="location.reload()">Close / Restart</button>
+        </div>
+    </div>
+
+    <script>
+        // --- DATA (UPDATED FOR MOCK TEST 2) ---
+        const questions = [
+            // PART 1
+            { q: "What is the first aim of First Aid? / प्राथमिक उपचार (First Aid) का पहला उद्देश्य क्या है?", o: ["First Aid / प्राथमिक उपचार", "Medicine / दवा", "ICU Treatment / ICU उपचार", "Surgery / सर्जरी"], a: 0 },
+            { q: "What is the first action when checking a patient's condition? / किसी मरीज की स्थिति की जांच करते समय सबसे पहले क्या कार्रवाई की जाती है?", o: ["Check for breathing / सांस लेने की जाँच करें", "Check for insurance / बीमा के लिए जाँच करें", "Check for external injuries / बाहरी चोटों की जाँच करें", "Talk to victim and shake shoulders / पीड़ित से बात करें और उसके कंधे हिलाएं"], a: 3 },
+            { q: "What are the three basic steps in an emergency? / आपात स्थिति में आप कौन-से तीन बुनियादी कदम उठा सकते हैं?", o: ["Check, Call, Care / चेक, कॉल, केयर", "Call, Check, Care / कॉल, चेक, केयर", "Identify, Decide, Call / पहचानें, निर्णय लें, कॉल करें", "Decide, Execute, Call / निर्णय लें, निष्पादित करें, कॉल करें"], a: 0 },
+            { q: "ABC in life support means: / जीवन सहायता में ABC का अर्थ है-", o: ["None of the above / उपरोक्त में से कोई नहीं", "Airway, Bridge, Canal", "Airway, Breathing, Circulation", "Action, Circulation, Breathing"], a: 2 },
+            { q: "What is the full form of DRAB in medical first aid? / चिकित्सा प्राथमिक उपचार में DRAB का पूर्णरूप क्या है?", o: ["Drag, Response, Airway, Breathing", "Danger, React, Airway, Breathing", "Danger, Response, Airway, Breathing", "Drag, React, Attack, Breathing"], a: 3 },
+            { q: "How many times does a healthy person breathe in a minute? / एक स्वस्थ व्यक्ति एक मिनट में कितनी बार श्वास लेता है?", o: ["15-20 times / 15-20 बार", "10-20 times / 10-20 बार", "20-25 times / 20-25 बार", "12-14 times / 12-14 बार"], a: 0 },
+            { q: "How many lungs are there in the human body? / मनुष्य के शरीर में फेफड़ों की संख्या कितनी होती है?", o: ["2", "4", "1", "Many / अनेक"], a: 0 },
+            { q: "Where does blood purification take place? / रक्त का शुद्धिकरण कहाँ होता है?", o: ["Lungs / फेफड़े", "Heart / हृदय", "In both Heart and Lungs / हृदय तथा फेफड़े दोनों में", "None / उपर्युक्त में से कोई नहीं"], a: 2 },
+            { q: "Approximately how many liters of blood are in a healthy human body? / एक स्वस्थ मनुष्य के शरीर में लगभग कितने लीटर रक्त होता है?", o: ["4", "8", "6", "10"], a: 2 },
+            { q: "What is the life span of Red Blood Cells (RBC)? / लाल रक्त कण (RBC) का जीवन कितने दिन का होता है?", o: ["50-60", "210-240", "150-190", "90-120"], a: 3 },
+            { q: "Which blood group is called Universal Receiver? / कौन-सा रक्त वर्ग सर्वग्राही (Universal Receiver) कहलाता है?", o: ["Group 'A'", "Group 'O'", "Group 'AB'", "Group 'B'"], a: 2 },
+            { q: "Which of the following is the Universal Donor blood group? / सर्वदाता (Universal Donor) रक्त वर्ग निम्न में से कौन-सा है?", o: ["O", "B", "N", "A"], a: 0 },
+            { q: "The main organ of the Circulatory System is: / परिसंचरण तन्त्र का मुख्यतम अंग है-", o: ["Lungs / फेफड़े", "Veins / शिराएँ", "Arteries / धमनियाँ", "Heart / हृदय"], a: 3 },
+            { q: "Which chamber of the heart has thick and strong walls? / हृदय के किस कोष्ठ की दीवार मोटी एवं दृढ़ होती है?", o: ["Left Atrium / बाएं अलिन्द", "Left Ventricle / बाएं निलय", "Right Atrium / दाएं अलिन्द", "Right Ventricle / दाएं निलय"], a: 1 },
+            { q: "If you see a broken bone, what should you do first? / अगर आपको दिखता है कि कोई हड्डी टूट गई है तो पहले क्या करेंगे?", o: ["Leave it as is / उसे ऐसे ही छोड़ देंगे", "Straighten bone and tie a splint / हड्डी को सीधा करके स्प्लिंट/तख्ता बाँध देंगे", "Pour hot water / गर्म पानी डालेंगे", "Massage it / मालिश करेंगे"], a: 1 },
+            { q: "First Degree Burn is: / फर्स्ट डिग्री बर्न (First Degree Burn) है-", o: ["Destroying all layers of skin / त्वचा की सभी परतों को नष्ट कर देना", "Redness and blisters / लाल और छाला होना", "Involving only the top layer of skin / केवल त्वचा की ऊपरी परत का शामिल होना", "Most severe burn / जलने में सबसे गंभीर है"], a: 2 },
+            { q: "Why should the burnt part be covered with a clean/sterile dressing? / पीड़ित व्यक्ति के जले हुए भाग को साफ या रोगाणुहीन ड्रेसिंग से क्यों ढका जाना चाहिए?", o: ["To keep warm / गर्म रखने के लिए", "To cool down / ठंडा करने के लिए", "To prevent infection / संक्रमण को रोकने के लिए", "Both a and b / (a) और (b) दोनों"], a: 2 },
+            { q: "What wound is caused by a pointed weapon driven through the skin? / त्वचा के माध्यम से शरीर में चलाए गए नुकीले हथियार से कौन-सा घाव होता है?", o: ["Incised wound / कटे हुए घाव", "Puncture wound / पंचर घाव", "Closed wound / बंद घाव", "Lacerated wound / विदीर्ण घाव"], a: 1 },
+            { q: "How should a victim sit during a nosebleed? / नाक से खून बहने (Nosebleed) पर पीड़ित को कैसे बैठाना चाहिए?", o: ["Head tilted back / सिर पीछे झुकाकर", "Head forward pinching nostrils / सिर आगे झुकाकर और नथुनों को पिंच करके", "Lying down / लेटाकर", "Legs elevated / पैर ऊपर करके"], a: 3 },
+            { q: "What are the symptoms of Internal Bleeding? / आंतरिक रक्तस्राव (Internal Bleeding) के लक्षण क्या हैं?", o: ["Rapid weak pulse, thirst / तेजी से कमजोर नाड़ी, अत्यधिक प्यास", "Cold, clammy skin / त्वचा जो ठंडी या नमी महसूस करती है", "Swollen soft tissues / शरीर के कोमल अंग सूजे हुए", "All of the above / उपरोक्त सभी"], a: 3 },
+            { q: "CPR process is: / CPR प्रक्रिया है-", o: ["Rescue breathing and chest compression / बचाव श्वास और छाती संपीड़न", "Only chest compression / केवल छाती का संपीड़न", "Only rescue breathing / केवल बचाव श्वास", "Only oxygenation / केवल ऑक्सीकरण"], a: 0 },
+            { q: "How deep should chest compressions be on an adult during CPR? / वयस्क पर सीपीआर (CPR) करते समय, छाती का संकुचन कितना गहरा होना चाहिए?", o: ["1.5 inches", "2.5 inches", "2 inches", "3 inches"], a: 3 },
+            { q: "How deep should chest compressions be on a child during CPR? / एक बच्चे पर सीपीआर करते समय, छाती का संकुचन कितना गहरा होना चाहिए?", o: ["3 inches", "2 inches", "2.5 inches", "1.5 inches"], a: 3 },
+            { q: "Artificial Respiration is also known as: / कृत्रिम श्वसन (Artificial Respiration) को किस रूप में भी जाना जाता है?", o: ["Nebulization", "External respiration", "CPR / हृदय-फुफ्फुसीय पुनर्जीवन", "Internal respiration"], a: 2 },
+            { q: "Suitable method for artificial respiration when ribs are broken: / पसलियों के टूट जाने पर कृत्रिम श्वसन के लिए उपयुक्त विधि है-", o: ["Laborde method / लाबोर्ड विधि", "Sylvester method / सिल्वेस्टर विधि", "Schafer method / शेफर विधि", "Mouth to mouth / मुँह से श्वास देना"], a: 0 },
+            { q: "What is the ratio for Adult CPR? / वयस्क सीपीआर (Adult CPR) करते समय अनुपात क्या है?", o: ["3 slow breaths, 15 compressions", "1 slow breath, 10 compressions", "5 slow breaths, 10 compressions", "2 slow breaths, 15 compressions / 2 धीमी सांस और 15 छाती संपीड़न"], a: 3 },
+            { q: "In general, how should a splint be? / सामान्य तौर पर एक स्पिलंट (Splint) कैसा होना चाहिए?", o: ["Loose / ढीला", "Tied with cravat only / केवल क्रेवेट से बंधा हुआ", "Snug, but not cutting circulation / स्नग, लेकिन इतना तंग नहीं कि परिसंचरण को धीमा कर दे", "None / उपरोक्त में से कोई नहीं"], a: 2 },
+            { q: "Use of Elastic Bandages: / लोचदार पट्टियों (Elastic Bandages) का उपयोग बताइए-", o: ["Control swelling and support sprains / सूजन को नियंत्रित और मोच या खिंचाव को सहारा देने के लिए", "Control bleeding / रक्तस्राव को नियंत्रित करने के लिए", "For amputated limb / कटे हुए अंग के लिए", "While splinting / स्प्लिंट लगाते समय"], a: 0 },
+            { q: "In which situation can you move the victim? / किस स्थिति में आप पीड़ित को स्थानांतरित (Move) कर सकते हैं?", o: ["Need to care for another victim / जब आपको किसी अन्य पीड़ित की देखभाल करनी हो", "Easier to care for victim / पीड़ित की देखभाल करना आसान होगा", "When victim is in danger / जब पीड़ित खतरे में है", "All of the above / उपरोक्त सभी"], a: 2 },
+            { q: "Suitable artificial respiration method in case of fracture: / अस्थि भंग (फ्रैक्चर) की स्थिति में कृत्रिम श्वास के लिए उपयुक्त विधि है-", o: ["Schafer method", "Sylvester method", "Laborde method", "Mouth to mouth"], a: 2 },
+            { q: "What is Heat Stroke? / लू लगना (Heat Stroke) क्या है?", o: ["High rise in body temp / शरीर के तापमान में बहुत अधिक वृद्धि", "Hot red or dry skin / गर्म लाल या शुष्क त्वचा", "Rapid weak pulse / तेजी से कमजोर नाड़ी", "All of the above / उपरोक्त सभी"], a: 3 },
+            { q: "What NOT to do when caring for Frostbite? / शीतदंश (Frostbite) से पीड़ित व्यक्ति की देखभाल करते समय क्या नहीं करना चाहिए?", o: ["Soak in hot water / गर्म पानी में भिगोना", "Pop blisters / फफोले फोड़ना", "Handle gently / धीरे से संभालना", "Rub vigorously until red / त्वचा लाल दिखाई देने तक जोर से रगड़ें"], a: 3 },
+            { q: "First action for Electric Shock? / यदि किसी को बिजली का झटका (Electric Shock) लगा है, तो सबसे पहले क्या करें?", o: ["Cover burns / जले हुए भागों को कवर करें", "Ensure power is off / सुनिश्चित करें कि बिजली बंद है", "Head down / सिर नीचे रखें", "Move victim / स्थानांतरित करें"], a: 1 },
+            { q: "What to do if a student is stung by a bee and has an allergy? / यदि किसी छात्र को मधुमक्खी ने काट लिया है और उसे एलर्जी है, तो क्या करें?", o: ["Inject with EpiPen / एपि-पेन से इंजेक्शन दें", "Apply heat pack / हीट पैक लगाएँ", "Both a and b / (a) और (b) दोनों", "Apply cold pack / ठंडा पैक लगाएँ"], a: 0 },
+            { q: "What to do for Snake Bite? / साँप के काटने (Snake Bite) पर आप क्या करेंगे?", o: ["Ice on wound / घाव पर बर्फ लगाएँ", "Elevate area / घायल क्षेत्र को ऊपर उठाएँ", "Suck poison / जहर चूसें", "Wash wound, keep limb below heart / घाव को धो लें, घायल भाग को हृदय से नीचे रखें"], a: 3 },
+            { q: "Man having Heart Attack has medicine, what to do? / एक आदमी को दिल का दौरा पड़ रहा है, यदि उसके पास दवा है, तो क्या करें?", o: ["Call 112", "Start CPR", "Put medicine in mouth / मुँह में दवा डालें", "Assist with meds, Call 112, Reassure"], a: 2 },
+            { q: "What to do for an unconscious Diabetic victim? / बेहोश मधुमेह (Diabetic) पीड़ित के लिए क्या करें?", o: ["Check pulse / नाड़ी की जाँच करें", "Start CPR / सीपीआर शुरु करें", "Give Insulin / इंसुलिन दें", "Rescue breathing / बचाव श्वास शुरु करें"], a: 0 },
+            { q: "How many phalanges are in the human body? / मानव शरीर में कितने अंगुल्यस्थियाँ (Phalanges) होते हैं?", o: ["12", "15", "14", "10"], a: 2 },
+            { q: "Weight of the right lung in human body? / मनुष्य के शरीर के दायें फेफड़े का वजन कितने ग्राम का होता है?", o: ["620", "570", "470", "680"], a: 0 },
+            { q: "Function of White Blood Cells (WBC): / श्वेत रुधिर कणिकाओं (WBC) का कार्य है-", o: ["Destroy pathogens / हानिकारक रोगाणुओं को नष्ट करना", "Prepare antitoxins / प्रतिविष तैयार करना", "Protect body / शरीर की रक्षा करना", "All of the above / उपर्युक्त सभी कार्य"], a: 3 },
+            { q: "Body protector cells are: / शरीर-रक्षक कणिकाएँ हैं-", o: ["Platelets", "RBC", "WBC", "Fibrinogen"], a: 2 },
+            { q: "What is Lymph? / लसीका (Lymph) क्या है?", o: ["Fluid filtered from blood vessels / रक्त वाहिनियों से छना हुआ द्रव्य पदार्थ", "Fluid with WBC no RBC / द्रव्य जिसमें RBC नहीं होती लेकिन WBC होती हैं", "Fluid with less protein / द्रव्य जिसमें प्रोटीन कम होता है", "All of the above / उपर्युक्त सभी"], a: 3 },
+            { q: "The net formed during blood clotting is made of? / रक्त के थक्के (Blood Clotting) जमने की प्रक्रिया के दौरान जो जाल बनता है वह किसका बना होता है?", o: ["Fibrinogen", "Thromboplastin", "Albumin", "Fibrin / फाइब्रिन"], a: 3 },
+            { q: "Vitamin required for Prothrombin formation? / प्रोथ्रोम्बिन के निर्माण के लिए किस विटामिन की आवश्यकता होती है?", o: ["D", "B", "A", "K"], a: 3 },
+            { q: "Length of Trachea in cm? / श्वासनली (Trachea) की लम्बाई कितने सेमी होती है?", o: ["16", "24", "18", "12"], a: 3 },
+            { q: "Trachea cartilage rings resemble which English letter? / श्वासनली कार्टिलेज किस अंग्रेजी के अक्षर से बने छल्ले से बनती है?", o: ["A", "S", "C", "U"], a: 2 },
+            { q: "Percentage of oxygen in air exhaled from lungs? / फेफड़ों से निकलने वाली वायु में ऑक्सीजन की प्रतिशत मात्रा लगभग होती है-", o: ["16.3%", "6.2%", "14.2%", "5.5%"], a: 0 },
+            { q: "Why does an area swell when there is a boil/abscess? / शरीर के किस अंग में फोड़ा होने पर वह स्थान क्यों सूज जाता है?", o: ["Swelling of lymph nodes / लसीका ग्रन्थियों के फूलने से", "Breakdown of cells / कोशिकाओं की टूट-फूट के कारण", "Injury to muscles / मांसपेशियों में घाव होने से", "All of the above / उपर्युक्त सभी"], a: 0 },
+            { q: "What happens to blood color when oxygen is low? / रक्त में ऑक्सीजन की मात्रा कम होने पर वह कैसा हो जाता है?", o: ["Red turns to purple / लाल रंग बैंगनी रंग में परिवर्तित हो जाता है", "Turns blue / नीले रंग का हो जाता है", "Bright red / चमकीले लाल रंग का", "All of the above / उपर्युक्त सभी"], a: 0 },
+            { q: "Which is NOT a symptom of Heart Attack? / हार्ट अटैक (Heart Attack) का लक्षण कौन-सा नहीं है?", o: ["Chest pain / सीने में दर्द", "Excessive sweating / अत्यधिक पसीना आना", "Pale or blue color / रंग में पीला या नीला", "Red, hot or dry skin / लाल, गर्म या शुष्क त्वचा"], a: 3 },
+
+            // PART 2
+            { q: "Boy with arrow in chest/back, what to do? / एक लड़के की छाती और पीठ में एक तीर (Arrow) लगा हुआ है, तब आप क्या करेंगे?", o: ["Do not remove arrow, stabilize it / तीर को न हटाएँ, इसे हिलने से रोकने के लिए ड्रेसिंग रखें", "Remove arrow, apply gauze / तीर निकालें और घाव पर विसंक्रमित गॉज लगाएँ", "Break the back part of arrow / तीर न हटाएँ, पीछे के हिस्से को तोड़ दें", "Remove and wash wound / तीर निकालें और घाव को धो लें"], a: 0 },
+            { q: "Boy cut his finger, what to do? / एक लड़के की उँगली कट गई है, आपको क्या करना चाहिए?", o: ["Wrap and go to hospital / कटी उंगली को विसंक्रमित गॉज में लपेटे और सीधे अस्पताल ले जाएँ", "Tourniquet / रक्तस्त्राव रोकने के लिए टूर्निकेट रखें", "Directly on ice / कटी हुई उंगली को सीधे बर्फ पर रखें", "Wrap in dressing, plastic bag, then on ice / कटी हुई उंगली को ड्रेसिंग में लपेटें, थैली में रखें, फिर बर्फ पर"], a: 3 },
+            { q: "Smelling Salt is used for: / सूंघने वाला नमक (Smelling Salt) का प्रयोग किया जाता है-", o: ["Heat stroke / लू लगने पर", "Nosebleed / नक्सीर छुटने पर", "Bleeding / रक्त स्राव होने पर", "Fainting / बेहोशी पर"], a: 3 },
+            { q: "Plant providing oxygen 24 hours? / चौबीसों घण्टे ऑक्सीजन प्रदान करने वाला पौधा कौन-सा है?", o: ["Mango / आम का पेड़", "Peepal and Neem / पीपल और नीम का पेड़", "Amla / आँवला का पेड़", "Rose / गुलाब का पेड़"], a: 1 },
+            { q: "Car accident victim vomited and coughing blood, likely: / एक कार दुर्घटना के शिकार व्यक्ति को अभी-अभी उल्टी हुई है और खांसी में खून आ रहा है, तो संभावना है:", o: ["Internal Bleeding / आंतरिक रक्तस्त्राव", "Seizure / दौरा पड़ रहा है", "Heart Attack / दिल का दौरा", "Diabetic Emergency / मधुमेह की आपात स्थिति"], a: 0 },
+            { q: "Human Nervous System is divided into? / मानव का तंत्रिका तंत्र (Nervous System) कितने भागों में विभाजित होता है?", o: ["Central and Peripheral / केंद्रीय और परिधीय", "Only Central / केवल केंद्रीय", "Only Peripheral / केवल परिधीय", "None / इनमें से कोई नहीं"], a: 0 },
+            { q: "Fluid between brain membranes to protect from shock? / मस्तिष्क को झटकों से बचाने के लिए आवरण झिल्लियों के बीच कौन सा द्रव भरा होता है?", o: ["Plasma / प्लाज्मा", "Cerebrospinal Fluid / सेरिब्रोस्पाइनल फ्लूइड", "Lymph / लसिका", "Hemoglobin / हीमोग्लोबिन"], a: 1 },
+            { q: "Largest part of the brain? / मस्तिष्क का सबसे बड़ा भाग कौन सा है?", o: ["Cerebrum / प्रमस्तिष्क", "Cerebellum / अनुमस्तिष्क", "Medulla Oblongata / मेडुला ऑब्लॉगैटा", "Spinal Cord / मेरु-रज्जु"], a: 0 },
+            { q: "Heart rate of a 1-year-old child per minute? / 1 वर्ष के बच्चे की हृदय स्पन्दन (Heart Rate) की दर प्रति मिनट कितनी होती है?", o: ["120", "80-90", "60-70", "100"], a: 0 },
+            { q: "Waves in arteries due to heartbeat are known as: / झटके से धमनियों में जो लहरें दौड़ती हैं, उन्हें किस नाम से जाना जाता है?", o: ["Pacemaker", "Heartbeat", "Pressure point", "Pulse / नाड़ी"], a: 3 },
+            { q: "Yellowish transparent fluid in blood? / रक्त में पाया जाने वाला पीला-सा एवं पारदर्शी तरल पदार्थ है-", o: ["Protoplasm / जीवद्रव्य", "Protein / प्रोटीन", "Hemoglobin / हीमोग्लोबिन", "Plasma / प्लाज्मा"], a: 3 },
+            { q: "Where are blood cells formed before birth? / गर्भावस्था में अथवा जन्म से पूर्व रक्त कणिकाएँ किस स्थान में बनती है?", o: ["Bone marrow / अस्थि-मज्जा", "Liver / यकृत", "Liver and Spleen / यकृत तथा प्लीहा दोनों", "Spleen / प्लीहा"], a: 2 },
+            { q: "Globulin is necessary for the body because: / ग्लोब्यूलिन (Globulin) शरीर के लिए आवश्यक है, क्योंकि-", o: ["It has antibodies / इसमें अनेक बीमारियों से शरीर को बचाने के लिए antibodies पाए जाते हैं", "Helps in clotting / यह रक्त का थक्का बनने में सहायता करती है", "Controls water / जल की मात्रा नियंत्रित करती है", "All of the above / उपर्युक्त सभी"], a: 0 },
+            { q: "Shape of White Blood Cells (WBC)? / श्वेत रक्त कणिकाएँ (WBC) किस आकार की होती हैं?", o: ["Round / गोल", "Flat / चपटी", "Cylindrical / बेलनाकार", "Irregular shape / अनियमित आकृति"], a: 3 },
+            { q: "Number of Blood Platelets per cubic mm? / रुधिर प्लेटलेट्स (Blood Platelets) की संख्या प्रति घन मिमी होती है-", o: ["1 Lakh", "2 Lakh", "5 Lakh", "2.5 Lakh / 2 लाख, 50 हजार"], a: 3 },
+            { q: "Which blood vessel carries pure blood from heart to body? / कौन-सी रक्त वाहिनी शुद्ध रक्त को हृदय से बाहर शरीर में ले जाती है?", o: ["Pulmonary Artery", "Pulmonary Vein", "Inferior Vena Cava", "Aorta / महाधमनी"], a: 3 },
+            { q: "Where is the Tricuspid Valve located? / त्रिवलीन कपाट (Tricuspid Valve) कहाँ स्थित होते हैं?", o: ["Between Right Atrium and Ventricle / दाएँ अलिन्द व निलय के बीच", "Between Left Atrium and Ventricle / बाएं अलिन्द व निलय के बीच", "In Aorta / महाधमनी में", "None / इनमें से कोई नहीं"], a: 0 },
+            { q: "Why does blue/purple blood become thick? / नीला बैंगनी रक्त (Blue/Purple blood) गाढ़ा क्यों हो जाता है?", o: ["It is impure / यह अशुद्ध होता है", "Mixture of CO2 and waste / इसमें CO2 और अवशिष्ट पदार्थों का सम्मिश्रण होता है", "Flow is slower / इसका बहाव शुद्ध रक्त से धीमा होता है", "All of the above / उपर्युक्त सभी कथन सही हैं"], a: 3 },
+            { q: "What is SA Node? / साइनो-एण्ट्रियल-नोड (SA Node) क्या है?", o: ["Pacemaker / पेस मेकर", "Controller of heart contraction / हृदय के संकुचन को नियंत्रित करने वाला स्थल", "Center in Right Atrium / दाएँ अलिन्द में स्थित केन्द्र", "All of the above / उपर्युक्त सभी कथन सही हैं"], a: 3 },
+            { q: "Valve allowing blood from Ventricle to Aorta but not back? / वह कपाट जो निलय से रक्त को महाधमनी में जाने तो देते हैं, परन्तु वापस नहीं लौटने देते?", o: ["Semilunar Valve / अर्द्धचन्द्राकार कपाट", "Tricuspid Valve / त्रिवलनी कपाट", "Bicuspid Valve / द्विवलनी कपाट", "None / इनमें से कोई नहीं"], a: 1 },
+            { q: "Suspect poisoning if student has: / आपको संदेह हो सकता है कि एक छात्र को जहर (Poison) दिया गया है यदि वह:", o: ["Nausea, vomit, diarrhea", "Chest or abdominal pain", "Burns on lips/tongue", "All of the above / उपरोक्त सभी"], a: 3 },
+            { q: "Care for Heat Cramps victim: / निम्नलिखित में से गर्मी में ऐंठन (Heat Cramps) से पीड़ित छात्र की देखभाल करते समय क्या करें?", o: ["Apply cold packs", "Massage muscles vigorously", "Walk slowly", "Give cold water or sports drink / ठंडा पानी या स्पोर्ट्स ड्रिंक दें"], a: 3 },
+            { q: "What NOT to do for Electrical Burn victim? / बिजली से जल गया हो (Electrical Burn), आप ऐसा 'नहीं' करेंगे:", o: ["Cool the burnt part / जले हुए भाग को ठंडा करें", "Check for fractures / संभावित फ्रैक्चर की जाँच", "Check breath/pulse / श्वास और नाड़ी की जाँच", "Treat for shock / सदमें के लिए इलाज"], a: 0 },
+            { q: "Common cause of cardiac arrest in infants? / शिशु के दिल की धड़कन रुकने (Cardiac Arrest) का सबसे आम कारण क्या है?", o: ["Breathing trouble / सांस लेने में तकलीफ", "Injury / चोट", "SIDS", "Allergy / एलर्जी"], a: 0 },
+            { q: "Symptoms indicating Internal Bleeding? / निम्नलिखित में से कौन-से लक्षण आंतरिक रक्तस्राव (Internal Bleeding) का संकेत देते हैं?", o: ["Rapid weak pulse, thirst / तेजी से कमजोर नाड़ी, अत्यधिक प्यास", "Cold/clammy skin / त्वचा जो ठंडी या नमी महसूस करती है", "Swollen soft organs / शरीर के कोमल अंग सूजे हुए या सख्त", "All of the above / उपरोक्त सभी"], a: 3 },
+            { q: "CPR procedure for a 6-year-old boy? / छह साल के लड़के (6-year-old) के लिए सीपीआर (CPR) प्रक्रिया क्या है?", o: ["5 compressions, 1 breath (5:1)", "15 compressions, 2 breaths", "15 compressions, 1 breath", "3 compressions, 1 breath"], a: 0 },
+            { q: "How should breaths be during infant CPR to avoid air in stomach? / शिशु सी०पी०आर० या रेस्क्यू ब्रीदिंग करते समय, पेट में हवा जाने से बचने के लिए सांसें कैसी होनी चाहिए?", o: ["Slowly / धीरे-धीरे से", "Correct and fast / सही और तेज", "Hard and fast / कठिन और तेज", "Long and hard / लंबी और कठिन"], a: 0 },
+            { q: "Girl not breathing but has pulse, what to do? / एक लड़की सांस नहीं ले रही है लेकिन उसकी नाड़ी (Pulse) है तब आप क्या करेंगे?", o: ["Call 112, Start CPR", "Wait for help", "Check airway, Start CPR", "Call 112, Start Rescue Breathing / 112 पर कॉल करें, और बचाव श्वास शुरु करें"], a: 3 },
+            { q: "Volume of Supplemental Air in cubic cm? / सम्पूरक वायु (Supplemental Air) की मात्रा कितने घन सेण्टीमीटर होती है?", o: ["1500", "500", "1000", "300"], a: 0 },
+            { q: "Pharynx is related to how many types of organs? / ग्रसनिका (Pharynx) कितने प्रकार के अंगों से सम्बन्धित होती है?", o: ["3", "4", "5", "2"], a: 2 },
+            { q: "Why are Dressing and Pads used? / ड्रेसिंग और पैड (Dressing and Pads) का उपयोग क्यों किया जाता है?", o: ["Absorb blood / खून सोखने के लिये", "Sucking wound on chest / छाती पर चूसने वाले घाव पर", "Not in kit / प्राथमिक चिकित्सा किट में शामिल नहीं हैं", "Control bleeding and keep germs out / रक्तस्त्राव को नियंत्रित करने और कीटाणुओं को बाहर रखने में मदद के लिए"], a: 3 },
+            { q: "Bandages are used to: / निम्नलिखित में से पट्टियों (Bandages) का उपयोग किया जाता है-", o: ["Apply directly on wound / रक्त को सोखने के लिए घाव पर सीधे लगाकर", "Only for small wounds / केवल छोटे घाव के लिए", "Reduce pain / दर्द कम करने के लिए", "Hold dressing and control bleeding / ड्रेसिंग को सही जगह रखकर दबाव डालने और रक्तस्त्राव को नियंत्रित करने के लिये"], a: 3 },
+            { q: "Care for soft tissue wounds? / कोमल ऊतकों (Soft Tissues) के घावों की देखभाल किस प्रकार की जाती है?", o: ["Heat and elastic bandages", "Ice and bandages", "Both b and c / (b) और (c) दोनों", "Direct pressure / त्वचा के नीचे रक्तस्त्राव को कम करने के लिए हिस्से पर सीधा दबाव डालें"], a: 2 },
+            { q: "Order of First Aid: (1)Restore Breath (2)Stop Bleeding (3)Treat Shock (4)Call Doctor / प्राथमिक चिकित्सा का सही क्रम:", o: ["2, 4, 3, 1", "4, 3, 2, 1", "1, 2, 3, 4", "4, 2, 1, 3"], a: 2 },
+            { q: "How should a good bandage be? / एक अच्छी पट्टी कैसी होनी चाहिए?", o: ["With germs / कीटाणुओं के साथ", "Wet / गीलेपन के साथ", "Oily / तैलीय", "Germ free / रोगाणु मुक्त"], a: 3 },
+            { q: "Protein found in Plasma? / प्लाज्मा में किस प्रकार का प्रोटीन पाया जाता है?", o: ["Albumin", "Globulin", "Fibrinogen", "All of the above / उपर्युक्त सभी"], a: 3 },
+            { q: "What are Neutrophils? / न्यूट्रोफिल्स (Neutrophils) क्या है?", o: ["Type of WBC / यह एक प्रकार की श्वेत रक्त कणिकाएँ है", "70% of WBC / इनकी संख्या श्वेत रक्त कणिका में 70% होती है", "Polymorphic center / इनका केन्द्र बहुरूपी होता है", "All of the above / उपर्युक्त सभी"], a: 1 },
+            { q: "Granular WBCs are: / कणिकामय श्वेत रक्त कणिकाएँ (Granular WBC) हैं-", o: ["Eosinophils", "Basophils", "Neutrophils", "All of the above / उपर्युक्त सभी"], a: 3 },
+            { q: "Blood weight fraction of total body weight? / मनुष्य के शरीर में उसके शरीर के कुल वजन का कितना भाग रक्त (Blood) का होता है?", o: ["1/5", "1/15", "1/10", "1/20"], a: 2 },
+            { q: "Platelets are produced by? / प्लेटलेट्स (Platelets) उत्पन्न होती है-", o: ["Fatty food", "Sunlight", "Vitamins", "All of these / इनमें से सभी"], a: 3 },
+            { q: "Function of Pericardial fluid? / हृदयावरणी द्रव (Pericardial fluid) का कार्य है-", o: ["Keep heart moist", "Help in movement", "Protect from shock", "All of the above / उपर्युक्त सभी"], a: 3 },
+            { q: "Vessels with impure blood and valves? / ऐसी नलिकाएं जिसमें प्रायः अशुद्ध रुधिर बहता है और कपाट (Valves) पाए जाते हैं?", o: ["Vein / शिरा", "Artery / धमनी", "Capillaries / केशिकाएं", "Valve / कपाट"], a: 0 },
+            { q: "Structure of Lungs? / फेफड़ों की संरचना (Structure of Lungs) कैसी होती है?", o: ["Spongy / स्पन्जी", "Soft / कोमल", "Solid / ठोस", "Unclear / अस्पष्ट"], a: 0 },
+            { q: "Number of Platelets per cubic mm (in Lakhs)? / एक घन मिलीमीटर में बिम्बाणु (Platelets) की संख्या कितने लाख तक होती है?", o: ["2.5-3", "1.5-3", "0.5-3", "3.5-3"], a: 0 },
+            { q: "System transporting nutrients and oxygen? / शरीर के उस तन्त्र को क्या कहते हैं जो शरीर के सभी भागों में पोषक तत्वों तथा ऑक्सीजन को पहुँचाने का कार्य करता है?", o: ["Digestive System", "Respiratory System", "Circulatory System / परिसंचरण तन्त्र", "Excretory System"], a: 2 },
+            { q: "Center of blood circulation? / रक्त परिभ्रमण का केन्द्र स्थल क्या है?", o: ["Kidney", "Lungs", "Heart / हृदय", "Cell"], a: 2 },
+            { q: "Technique used in First Aid? / प्राथमिक चिकित्सा में निम्नलिखित में से कौन-सी तकनीक का उपयोग किया जाता है?", o: ["Bandage / पट्टी", "Transport technique / परिवहन तकनीक", "Bandage / बैंडेज", "All of the above / उपरोक्त सभी"], a: 3 },
+            { q: "For a choking infant, what to do? / दम घुटने वाले शिशु के लिए, आप क्या करेंगे?", o: ["Back blows and chest thrusts / पीठ पर वार और छाती पर दबाव", "CPR / सी०पी०आर०", "Heimlich maneuver / हेमलिक प्रक्रिया", "Hold upside down / शिशु को उल्टा पकड़ें और कंधे के ब्लेड के बीच दबाएँ"], a: 0 },
+            { q: "Pressure point for forearm wound bleeding? / बांह के अग्र भाग पर लगे घाव पर रक्त प्रवाह कम करने के लिए दबाव कहाँ लागू करेंगे?", o: ["Inside arm between shoulder and elbow / कंधे और कोहनी के बीच हाथ के अंदर", "Inside elbow / कोहनी के अंदर", "Outside arm / हाथ के बाहर", "None / कोई नहीं"], a: 0 },
+            { q: "How to reduce infection risk in open wounds? / ऐसे घाव जो खुले हों, उनकी देखभाल करते समय संक्रमण का जोखिम कैसे कम करें?", o: ["Wash hands / हाथ धो लें", "Avoid direct blood contact / रक्त के सीधे संपर्क से बचें", "Use gloves/plastic / दस्ताने या प्लास्टिक की चादर का प्रयोग करें", "All of the above / उपरोक्त सभी"], a: 3 }
+        ];
+
+        let userAnswers = new Array(100).fill(null);
+        let flagged = new Set();
+        let currentIdx = 0;
+        let timerSeconds = 120 * 60;
+        let timerInterval;
+        let tabSwitchCount = 0;
+        let isDisqualified = false;
+
+        function startExam() {
+            const name = document.getElementById('student-name').value.trim();
+            const roll = document.getElementById('student-roll').value.trim();
+            if(!name || !roll) return alert("नाम और रोल नंबर भरें!");
+
+            // Randomize questions for the user
+            questions.sort(() => Math.random() - 0.5); 
+
+            document.addEventListener("visibilitychange", handleVisibilityChange);
+            
+            if(document.documentElement.requestFullscreen) {
+                document.documentElement.requestFullscreen().catch(e => console.log(e));
+            }
+
+            document.getElementById('entry-page').style.display = 'none';
+            document.getElementById('exam-page').style.display = 'flex';
+
+            createGrid();
+            renderQuestion();
+            startTimer();
+        }
+
+        function handleVisibilityChange() {
+            if (document.hidden) {
+                tabSwitchCount++;
+                if (tabSwitchCount < 3) {
+                    alert(`⚠️ WARNING ${tabSwitchCount}/3: \nटैब या ऐप न बदलें!`);
+                } else if (!isDisqualified) {
+                    isDisqualified = true;
+                    alert(`❌ VIOLATION LIMIT EXCEEDED! \nExam will be FAILED.`);
+                    finishExam(true);
+                }
+            }
+        }
+
+        function createGrid() {
+            const grid = document.getElementById('q-grid');
+            grid.innerHTML = '';
+            for(let i=0; i<100; i++) {
+                const b = document.createElement('div');
+                b.className = 'q-badge';
+                b.innerText = i+1;
+                b.id = `badge-${i}`;
+                b.onclick = () => { currentIdx = i; renderQuestion(); };
+                grid.appendChild(b);
+            }
+        }
+
+        function renderQuestion() {
+            const q = questions[currentIdx];
+            document.getElementById('q-num').innerText = currentIdx + 1;
+            
+            const qText = q.q.split(' / ');
+            let htmlQ = qText[0];
+            if(qText[1]) htmlQ += `<br><small style="color:#555; font-weight:normal;">${qText[1]}</small>`;
+            document.getElementById('question-text').innerHTML = htmlQ;
+            
+            const optCont = document.getElementById('options-container');
+            optCont.innerHTML = '';
+            
+            q.o.forEach((opt, i) => {
+                const card = document.createElement('div');
+                card.className = `option-card ${userAnswers[currentIdx] === i ? 'selected' : ''}`;
+                
+                const parts = opt.split(' / ');
+                const enText = parts[0];
+                const hiText = parts[1] || ""; 
+                
+                card.innerHTML = `
+                    <div class="opt-char">${String.fromCharCode(65+i)}</div>
+                    <div>
+                        <div class="opt-text-en">${enText}</div>
+                        ${hiText ? `<div class="opt-text-hi">${hiText}</div>` : ''}
+                    </div>
+                `;
+                
+                card.onclick = () => {
+                    if(userAnswers[currentIdx] === null || flagged.has(currentIdx)) {
+                        userAnswers[currentIdx] = i;
+                        renderQuestion();
+                    } else {
+                        card.style.transform = "translateY(4px)";
+                        setTimeout(()=> card.style.transform = "none", 100);
+                    }
+                };
+                optCont.appendChild(card);
+            });
+
+            updateBadges();
+        }
+
+        function updateBadges() {
+            for(let i=0; i<100; i++){
+                const b = document.getElementById(`badge-${i}`);
+                if(!b) continue;
+                b.className = 'q-badge';
+                if(i === currentIdx) b.classList.add('current');
+                if(flagged.has(i)) b.classList.add('flagged');
+                else if(userAnswers[i] !== null) b.classList.add('answered');
+            }
+        }
+
+        function toggleFlag() {
+            if(flagged.has(currentIdx)) flagged.delete(currentIdx);
+            else flagged.add(currentIdx);
+            updateBadges();
+        }
+
+        function nextQ() { if(currentIdx < 99) { currentIdx++; renderQuestion(); } }
+        function prevQ() { if(currentIdx > 0) { currentIdx--; renderQuestion(); } }
+
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                timerSeconds--;
+                let m = Math.floor(timerSeconds/60);
+                let s = timerSeconds % 60;
+                document.getElementById('timer').innerText = `${m}:${s < 10 ? '0'+s : s}`;
+                if(timerSeconds <= 0) { clearInterval(timerInterval); finishExam(); }
+            }, 1000);
+        }
+
+        function attemptFinish() {
+            let attemptCount = userAnswers.filter(a => a !== null).length;
+            if(attemptCount < 100) {
+                if(!confirm(`⚠️ आपने सिर्फ ${attemptCount} प्रश्न हल किये हैं।\nक्या आप वाकई SUBMIT करना चाहते हैं?`)) return;
+            } else {
+                if(!confirm("Submit Exam?")) return;
+            }
+            finishExam(false);
+        }
+
+        function finishExam(forced = false) {
+            clearInterval(timerInterval);
+            document.removeEventListener("visibilitychange", handleVisibilityChange);
+            
+            let correctCount = 0;
+            questions.forEach((q, i) => {
+                if(userAnswers[i] === q.a) correctCount++;
+            });
+
+            let status = "FAILED";
+            let statusColor = "#e74c3c";
+            
+            if (isDisqualified || forced) {
+                status = "FAILED (Cheating)";
+            } else if (correctCount >= 33) {
+                status = "PASSED";
+                statusColor = "#2ecc71";
+            }
+
+            document.getElementById('modal').style.display = 'flex';
+            document.getElementById('score-summary').innerHTML = `
+                Score: <b>${correctCount} / 100</b><br>
+                Result: <b style="color:${statusColor}">${status}</b>
+            `;
+
+            const downloadSection = document.getElementById('download-section');
+            if (correctCount >= 33 && !isDisqualified && !forced) {
+                downloadSection.innerHTML = `
+                    <p style="color:green; font-weight:bold;">Congratulations! You Passed.</p>
+                    <a href="answer_key.pdf" download="Answer_Booklet.pdf" class="btn-start" style="text-decoration:none; padding:12px 20px; font-size:1rem; display:inline-block;">
+                        📥 Download Answer Booklet
+                    </a>
+                `;
+            } else {
+                let msg = "Score is less than 33. Study hard!";
+                if(isDisqualified || forced) msg = "Disqualified due to Cheating.";
+                
+                downloadSection.innerHTML = `
+                    <p style="color:red; font-weight:bold;">${msg}</p>
+                    <button class="btn" style="background:#ddd; color:#888; cursor:not-allowed;" disabled>
+                        🔒 PDF Locked
+                    </button>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>
